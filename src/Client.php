@@ -1,6 +1,6 @@
 <?php
 
-namespace simaland\apiClient;
+namespace SimaLand\API;
 
 use \GuzzleHttp\ClientInterface;
 

@@ -1,16 +1,16 @@
 <?php
 
-namespace simaland\apiClient\tests;
+namespace SimaLand\API\Tests;
 
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
-use simaland\apiClient\Client;
+use SimaLand\API\Client;
 
 class BaseCase extends TestCase
 {
-    /** @var \simaland\apiClient\Client */
+    /** @var \SimaLand\API\Client */
     private $_client;
 
     /** @var \GuzzleHttp\Handler\MockHandler */
@@ -48,7 +48,7 @@ class BaseCase extends TestCase
     }
 
     /**
-     * @return \simaland\apiClient\Client
+     * @return \SimaLand\API\Client
      */
     protected function getClient()
     {

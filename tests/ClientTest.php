@@ -1,9 +1,9 @@
 <?php
 
-namespace simaland\apiClient\tests;
+namespace SimaLand\API\Tests;
 
 use GuzzleHttp\Psr7\Response;
-use simaland\apiClient\Client;
+use SimaLand\API\Client;
 
 class ClientTest extends BaseCase
 {

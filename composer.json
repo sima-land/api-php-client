@@ -21,12 +21,12 @@
     },
     "autoload": {
         "psr-4": {
-            "simaland\\apiClient\\": "src"
+            "SimaLand\\API\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "simaland\\apiClient\\tests\\": "tests"
+            "SimaLand\\API\\Tests\\": "tests"
         }
     }
 }
