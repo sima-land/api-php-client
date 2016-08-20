@@ -45,7 +45,7 @@ class Client extends Object
 
     /**
      * @param array $requests
-     * @return array
+     * @return Response[]
      * @throws \Exception
      */
     public function batchQuery(array $requests)
@@ -71,17 +71,19 @@ class Client extends Object
      * @param string $method
      * @param string $entity
      * @param array $getParams
-     * @return mixed|string
+     * @return Response
+     * @throws \Exception
      */
     public function query($method, $entity, array $getParams = [])
     {
-        return $this->batchQuery([
+        $response = $this->batchQuery([
             new Request([
                 'entity' => $entity,
                 'method' => $method,
                 'getParams' => $getParams,
             ])
         ]);
+        return reset($response);
     }
 
     /**
@@ -96,12 +98,12 @@ class Client extends Object
 
     /**
      * @param \GuzzleHttp\Psr7\Response[] $responses
-     * @return array
+     * @return Response[]
      */
     private function parseResponses(array $responses)
     {
         $result = [];
-        foreach ($responses as $response) {
+        foreach ($responses as $key => $response) {
             $body = $response->getBody()->getContents();
             $contentType = $response->getHeader('Content-Type');
             if (!empty($contentType)) {
@@ -109,12 +111,7 @@ class Client extends Object
             } else {
                 $contentType = '';
             }
-            if (stripos($contentType, 'application/json') !== false) {
-                $body = \GuzzleHttp\json_decode($body, true);
-            } else {
-                $body = ['html' => $body];
-            }
-            $result = array_merge($result, $body);
+            $result[$key] = new Response($body, $contentType);
         }
         return $result;
     }

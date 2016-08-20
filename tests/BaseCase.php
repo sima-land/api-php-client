@@ -21,7 +21,7 @@ class BaseCase extends \PHPUnit_Framework_TestCase
     private function getMockGuzzleHandler()
     {
         if (is_null($this->mockGuzzleHandler)) {
-            $this->mockGuzzleHandler = $this->mockGuzzleHandler = new MockHandler();
+            $this->mockGuzzleHandler = new MockHandler();
         }
         return $this->mockGuzzleHandler;
     }

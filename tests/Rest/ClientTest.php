@@ -40,14 +40,18 @@ class ClientTest extends BaseCase
     public function testQuery()
     {
         $client = $this->getClient();
-        $body = ['foo' => 'bar'];
+        $body = ['items' => ['foo' => 'bar']];
         $this->setResponse($body);
-        $result = $client->get('item');
-        $this->assertEquals($body, $result);
+        $response = $client->get('item');
+        $this->assertInstanceOf('SimaLand\API\Rest\Response', $response);
+        $this->assertEquals($body['items'], $response->items);
+
         $body = 'raw body';
         $this->setGuzzleHttpResponse(new Response(200, [], $body));
-        $result = $client->query('GET', 'item', ['key' => 'value']);
-        $this->assertEquals(['html' => $body], $result);
+        $response = $client->query('GET', 'item', ['key' => 'value']);
+        $this->assertInstanceOf('SimaLand\API\Rest\Response', $response);
+        $this->assertEmpty($response->items);
+        $this->assertEquals($body, $response->rawBody);
     }
 
     /**
@@ -62,20 +66,26 @@ class ClientTest extends BaseCase
     public function testBatchQuery()
     {
         $client = $this->getClient();
-        $body1 = ['foo' => 'bar'];
-        $body2 = ['bar' => 'foo'];
-        $this->setResponse($body1);
-        $this->setResponse($body2);
-        $result = $client->batchQuery([
-            new Request([
+        $body = [
+            'item1' => ['items' => ['foo' => 'bar']],
+            'item2' => ['items' => ['bar' => 'foo']]
+        ];
+        foreach ($body as $item) {
+            $this->setResponse($item);
+        }
+        $responses = $client->batchQuery([
+            'item1' => new Request([
                 'entity' => 'item',
                 'getParams' => ['id-mf' => '2,0']
             ]),
-            new Request([
+            'item2' => new Request([
                 'entity' => 'item',
                 'getParams' => ['id-mf' => '2,1']
             ]),
         ]);
-        $this->assertEquals(array_merge($body1, $body2), $result);
+        foreach ($responses as $key => $response) {
+            $this->assertInstanceOf('SimaLand\API\Rest\Response', $response);
+            $this->assertEquals($body[$key]['items'], $response->items);
+        }
     }
 }
