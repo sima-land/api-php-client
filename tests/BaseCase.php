@@ -54,7 +54,11 @@ class BaseCase extends \PHPUnit_Framework_TestCase
         if (is_null($this->client)) {
             $handler = HandlerStack::create($this->getMockGuzzleHandler());
             $guzzleClient = new \GuzzleHttp\Client(['handler' => $handler]);
-            $this->client = new Client();
+            $this->client = new Client([
+                'login' => 'test',
+                'password' => 'password',
+                'pathToken' => TEST_DIR . 'data'
+            ]);
             $this->client->setHttpClient($guzzleClient);
         }
         return $this->client;

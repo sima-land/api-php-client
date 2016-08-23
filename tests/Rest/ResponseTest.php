@@ -10,35 +10,29 @@ class ResponseTest extends BaseCase
     public function testParse()
     {
         $body = 'raw body';
-        $response = new Response($body);
+        $guzzleResponse = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/text'], $body);
+        $response = new Response($guzzleResponse);
         $this->assertEquals($body, $response->rawBody);
+        $this->assertEquals(200, $response->statusCode);
+        $this->assertEquals(['Content-Type' => [0 => 'application/text']], $response->headers);
+        $this->assertNull($response->body);
 
-        $body = require(__DIR__ . "/../data/item.php");
-        $invalidBody = $body;
+        $body = require(TEST_DIR . "/data/item.php");
+        $rawBody = json_encode($body);
+        $guzzleResponse = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], $rawBody);
+        $response = new Response($guzzleResponse);
+        $this->assertEquals($rawBody, $response->rawBody);
+        $this->assertEquals($body, $response->body);
+    }
 
-        $countItems = count($body['items']);
-        $totalCount = $body['_meta']['totalCount'];
-        $pageCount = $body['_meta']['pageCount'];
-        $currentPage = $body['_meta']['currentPage'];
-        $perPage = $body['_meta']['perPage'];
+    public function testIsOk()
+    {
+        $guzzleResponse = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/text'], 'Ok');
+        $response = new Response($guzzleResponse);
+        $this->assertTrue($response->isOk());
 
-        unset($invalidBody['_meta']);
-        $invalidBody = json_encode($invalidBody);
-        $response = new Response($invalidBody, 'application/json');
-        $this->assertEquals($invalidBody, $response->rawBody);
-        $this->assertEquals($countItems, count($response->items));
-        $this->assertEquals(0, $response->totalCount);
-        $this->assertEquals(0, $response->pageCount);
-        $this->assertEquals(1, $response->currentPage);
-        $this->assertEquals(50, $response->perPage);
-
-        $body = json_encode($body);
-        $response = new Response($body, 'application/json');
-        $this->assertEquals($body, $response->rawBody);
-        $this->assertEquals($countItems, count($response->items));
-        $this->assertEquals($totalCount, $response->totalCount);
-        $this->assertEquals($pageCount, $response->pageCount);
-        $this->assertEquals($currentPage, $response->currentPage);
-        $this->assertEquals($perPage, $response->perPage);
+        $guzzleResponse = new \GuzzleHttp\Psr7\Response(404, ['Content-Type' => 'application/text'], 'Not found');
+        $response = new Response($guzzleResponse);
+        $this->assertFalse($response->isOk());
     }
 }

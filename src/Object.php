@@ -2,6 +2,9 @@
 
 namespace SimaLand\API;
 
+/**
+ * Base class.
+ */
 class Object
 {
     public function __construct(array $options = [])

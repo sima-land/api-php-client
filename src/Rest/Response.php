@@ -4,67 +4,53 @@ namespace SimaLand\API\Rest;
 
 use SimaLand\API\Object;
 
+/**
+ * Response from sima-land.
+ */
 class Response extends Object
 {
     /**
      * @var array
      */
-    public $items = [];
+    public $body;
 
     /**
      * @var int
      */
-    public $totalCount = 0;
+    public $statusCode;
 
     /**
-     * @var int
+     * @var array
      */
-    public $pageCount = 0;
-
-    /**
-     * @var int
-     */
-    public $currentPage = 1;
-
-    /**
-     * @var int
-     */
-    public $perPage = 50;
+    public $headers;
 
     /**
      * @var string
      */
     public $rawBody;
 
-    public function __construct($body, $contentType = '')
+    /**
+     * @var string
+     */
+    public $reasonPhrase;
+
+    /**
+     * @param \Psr\Http\Message\ResponseInterface $response
+     */
+    public function __construct(\Psr\Http\Message\ResponseInterface $response)
     {
-        $this->rawBody = $body;
-        if ($contentType == 'application/json') {
-            $this->parseBody();
-        }
+        $this->statusCode = $response->getStatusCode();
+        $this->headers = $response->getHeaders();
+        $this->rawBody = $response->getBody()->getContents();
+        $this->reasonPhrase = $response->getReasonPhrase();
+        $this->body = json_decode($response->getBody(), true);
     }
 
-    private function parseBody()
+    /**
+     * @return bool
+     */
+    public function isOk()
     {
-        $body = \GuzzleHttp\json_decode($this->rawBody, true);
-        if (isset($body['items'])) {
-            $this->items = $body['items'];
-        }
-        if (!isset($body['_meta'])) {
-            return;
-        }
-        $meta = $body['_meta'];
-        if (isset($meta['totalCount'])) {
-            $this->totalCount = (int) $meta['totalCount'];
-        }
-        if (isset($meta['pageCount'])) {
-            $this->pageCount = (int) $meta['pageCount'];
-        }
-        if (isset($meta['currentPage'])) {
-            $this->currentPage = (int) $meta['currentPage'];
-        }
-        if (isset($meta['perPage'])) {
-            $this->perPage = (int) $meta['perPage'];
-        }
+        return ($this->statusCode >= 200 && $this->statusCode < 300);
     }
 }
