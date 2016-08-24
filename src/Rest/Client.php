@@ -238,7 +238,7 @@ class Client extends Object
     private function getTokenFilename()
     {
         if (is_null($this->pathToken)) {
-            $this->pathToken = __DIR__;
+            $this->pathToken = sys_get_temp_dir();
         }
         if (!file_exists($this->pathToken)) {
             throw new \Exception("Path {$this->pathToken} not found");
