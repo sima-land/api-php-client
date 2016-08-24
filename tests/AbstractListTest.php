@@ -62,9 +62,9 @@ class AbstractListTest extends BaseCase
         $abstractObject = $this->getAbstractObject();
         $request = new \SimaLand\API\Rest\Request();
         $abstractObject->assignPage($request);
-        $this->assertEmpty($request->getParams);
-        $abstractObject->assignPage($request, ['_meta' => ['currentPage' => 1]]);
         $this->assertEquals(6, $request->getParams[$abstractObject->keyThreads]);
+        $abstractObject->assignPage($request);
+        $this->assertEquals(11, $request->getParams[$abstractObject->keyThreads]);
     }
 
     public function testAssignThreadNumber()
@@ -74,7 +74,9 @@ class AbstractListTest extends BaseCase
         $abstractObject->assignThreadsNumber($request, 0);
         $this->assertEmpty($request->getParams);
         $abstractObject->assignThreadsNumber($request, 1);
-        $this->assertEquals(1, $request->getParams[$abstractObject->keyThreads]);
+        $this->assertEquals(2, $request->getParams[$abstractObject->keyThreads]);
+        $abstractObject->assignThreadsNumber($request, 2);
+        $this->assertEquals(3, $request->getParams[$abstractObject->keyThreads]);
     }
 
     public function testGet()

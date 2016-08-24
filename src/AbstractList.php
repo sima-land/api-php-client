@@ -68,16 +68,14 @@ abstract class AbstractList implements \Iterator
      */
     public function assignPage(Request &$request, $item = null)
     {
-        $currentPage = 0;
-        if ($item and isset($item['_meta']['currentPage'])) {
-            $currentPage = (int) $item['_meta']['currentPage'];
-        }
+        $currentPage = 1;
         if (!is_array($request->getParams)) {
-            $request->getParams = (array) $request->getParams;
+            $request->getParams = (array)$request->getParams;
         }
-        if ($currentPage > 0) {
-            $request->getParams[$this->keyThreads] = $currentPage + $this->countThreads;
+        if (isset($request->getParams[$this->keyThreads])) {
+            $currentPage = (int)$request->getParams[$this->keyThreads];
         }
+        $request->getParams[$this->keyThreads] = $currentPage + $this->countThreads;
     }
 
     /**
@@ -86,7 +84,8 @@ abstract class AbstractList implements \Iterator
      */
     public function assignThreadsNumber(Request &$request, $number = 0)
     {
-        if ($number == 0) {
+        $number++;
+        if ($number == 1) {
             return;
         }
         if (!is_array($request->getParams)) {
@@ -242,7 +241,7 @@ abstract class AbstractList implements \Iterator
                 $this->values[] = $item;
             }
             if (!is_null($item)) {
-                $this->assignPage($requests[$key], $item);
+                $this->assignPage($requests[$key]);
             }
         }
         $this->setRequests($requests);

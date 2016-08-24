@@ -178,7 +178,7 @@ class Client extends Object
         $options = [];
         if (!is_null($request)) {
             if (!empty($request->getParams)) {
-                $options['query'] = $request->getParams;
+                $options[\GuzzleHttp\RequestOptions::QUERY] = $request->getParams;
             }
         }
         $options = array_merge($this->options, $options);
