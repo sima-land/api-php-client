@@ -1,11 +1,27 @@
+[![Build Status](https://travis-ci.org/sima-land/api-php-client.svg?branch=master)](https://travis-ci.org/sima-land/api-php-client)
+
 # api-php-client
 
 Пример клиента для работы с API сайта sima-land.ru
 
 Клиент позволяет выкачивать каталог товаров с сайта sima-land.ru. 
 
-Пример использование
---------------------
+## Требования ##
+
+* [PHP 5.5 или новее](http://www.php.net/)
+* [composer](https://getcomposer.org/download/)
+
+## Установка ##
+
+```
+composer require "simaland/api-php-client": "0.1"
+```
+
+## Документация ##
+
+* [https://www.sima-land.ru/api/v3/help/](https://www.sima-land.ru/api/v3/help/)
+
+## Пример использование ##
 
 ```php
 $client = new \SimaLand\API\Rest\Client([
