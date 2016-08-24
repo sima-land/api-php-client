@@ -6,20 +6,40 @@ use SimaLand\API\Object;
 
 class Csv extends Object implements StorageInterface
 {
+    /**
+     * @var string
+     */
     public $path;
 
+    /**
+     * @var string
+     */
     public $delimiter = ';';
 
+    /**
+     * @var string
+     */
     public $enclosure = '"';
 
-    public $escapeChar = '\'';
-
+    /**
+     * @var
+     */
     private $filename;
 
+    /**
+     * @var
+     */
     private $fileHandler;
 
+    /**
+     * @var bool
+     */
     private $isSaveHeader = false;
 
+    /**
+     * @param array $options
+     * @throws \Exception
+     */
     public function __construct(array $options = [])
     {
         parent::__construct($options);
@@ -46,10 +66,10 @@ class Csv extends Object implements StorageInterface
     {
         if (!$this->isSaveHeader) {
             $keys = array_keys($item);
-            fputcsv($this->fileHandler, $keys, $this->delimiter, $this->enclosure, $this->escapeChar);
+            fputcsv($this->fileHandler, $keys, $this->delimiter, $this->enclosure);
             $this->isSaveHeader = true;
         }
-        fputcsv($this->fileHandler, $item, $this->delimiter, $this->enclosure, $this->escapeChar);
+        fputcsv($this->fileHandler, $item, $this->delimiter, $this->enclosure);
     }
 
     /**
