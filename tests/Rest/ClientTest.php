@@ -114,7 +114,7 @@ class ClientTest extends BaseCase
         $client->pathToken = $pathToken;
         $response = $client->get('user');
         $client->pathToken = $oldPathToken;
-        $this->assertEquals('ok', $response->rawBody);
+        $this->assertEquals('ok', $response->getBody()->getContents());
         $this->assertEquals($token, file_get_contents($fileToken));
         @unlink($fileToken);
     }
@@ -125,15 +125,9 @@ class ClientTest extends BaseCase
         $body = ['items' => ['foo' => 'bar']];
         $this->setResponse($body);
         $response = $client->get('item');
-        $this->assertInstanceOf('SimaLand\API\Rest\Response', $response);
-        $this->assertEquals($body['items'], $response->body['items']);
-
-        $body = 'raw body';
-        $this->setGuzzleHttpResponse(new Response(200, [], $body));
-        $response = $client->query('GET', 'item', ['key' => 'value']);
-        $this->assertInstanceOf('SimaLand\API\Rest\Response', $response);
-        $this->assertEmpty($response->body);
-        $this->assertEquals($body, $response->rawBody);
+        $this->assertInstanceOf('GuzzleHttp\Psr7\Response', $response);
+        $responseBody = json_decode($response->getBody(), true);
+        $this->assertEquals($body['items'], $responseBody['items']);
     }
 
     /**
@@ -166,8 +160,9 @@ class ClientTest extends BaseCase
             ]),
         ]);
         foreach ($responses as $key => $response) {
-            $this->assertInstanceOf('SimaLand\API\Rest\Response', $response);
-            $this->assertEquals($body[$key]['items'], $response->body['items']);
+            $this->assertInstanceOf('GuzzleHttp\Psr7\Response', $response);
+            $responseBody = json_decode($response->getBody(), true);
+            $this->assertEquals($body[$key]['items'], $responseBody['items']);
         }
     }
 }

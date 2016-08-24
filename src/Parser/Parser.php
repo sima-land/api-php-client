@@ -72,7 +72,7 @@ class Parser
     {
         foreach ($this->entities as $entity) {
             $this->storage->setEntity($entity->getEntity());
-            foreach ($entity->batch() as $item) {
+            foreach ($entity as $item) {
                 $this->storage->save($item);
             }
         }

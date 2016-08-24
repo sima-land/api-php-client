@@ -84,8 +84,9 @@ class AbstractListTest extends BaseCase
         $abstractObject->countThreads = 1;
         $response = $abstractObject->get();
         $response = reset($response);
-        $this->assertInstanceOf('SimaLand\API\Rest\Response', $response);
-        $this->assertEquals($this->item['items'], $response->body['items']);
+        $this->assertInstanceOf('GuzzleHttp\Psr7\Response', $response);
+        $body = json_decode($response->getBody(), true);
+        $this->assertEquals($this->item['items'], $body['items']);
     }
 
     public function testBatchGet()
@@ -110,10 +111,12 @@ class AbstractListTest extends BaseCase
         $responses = $abstractObject->get();
         $this->assertEquals(2, count($responses));
         $response = array_shift($responses);
-        $this->assertInstanceOf('SimaLand\API\Rest\Response', $response);
-        $this->assertEquals($body1['items'], $response->body['items']);
+        $this->assertInstanceOf('GuzzleHttp\Psr7\Response', $response);
+        $body = json_decode($response->getBody(), true);
+        $this->assertEquals($body1['items'], $body['items']);
         $response = array_shift($responses);
-        $this->assertInstanceOf('SimaLand\API\Rest\Response', $response);
-        $this->assertEquals($body2['items'], $response->body['items']);
+        $this->assertInstanceOf('GuzzleHttp\Psr7\Response', $response);
+        $body = json_decode($response->getBody(), true);
+        $this->assertEquals($body2['items'], $body['items']);
     }
 }

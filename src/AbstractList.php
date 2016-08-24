@@ -2,10 +2,11 @@
 
 namespace SimaLand\API;
 
+use GuzzleHttp\Psr7\Response;
 use SimaLand\API\Rest\Client;
 use SimaLand\API\Rest\Request;
 
-abstract class AbstractList
+abstract class AbstractList implements \Iterator
 {
     /**
      * Count threads.
@@ -32,6 +33,21 @@ abstract class AbstractList
      * @var Request[]
      */
     private $requests = [];
+
+    /**
+     * @var array
+     */
+    private $values = [];
+
+    /**
+     * @var int
+     */
+    private $key;
+
+    /**
+     * @var mixed
+     */
+    private $current;
 
     /**
      * @param Client $client
@@ -99,16 +115,6 @@ abstract class AbstractList
     }
 
     /**
-     * Load all records entity.
-     *
-     * @return Iterator
-     */
-    public function batch()
-    {
-        return new Iterator($this);
-    }
-
-    /**
      * @param Request[] $requests
      * @throws \Exception
      */
@@ -143,5 +149,102 @@ abstract class AbstractList
             $this->requests = $requests;
         }
         return $this->requests;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function current()
+    {
+        return $this->current;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function next()
+    {
+        if (empty($this->values)) {
+            $this->getData();
+        }
+        $this->current = array_shift($this->values);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function key()
+    {
+        return $this->key++;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function valid()
+    {
+        return !empty($this->current);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rewind()
+    {
+        $this->values = [];
+        $this->current = null;
+        $this->key = 0;
+        $this->next();
+    }
+
+    /**
+     * @param Response $response
+     * @return bool
+     * @throws \Exception
+     */
+    private function getBody(Response $response)
+    {
+        $body = json_decode($response->getBody(), true);
+        $statusCode = $response->getStatusCode();
+        if (($statusCode < 200 || $statusCode >= 300) && $statusCode != 404) {
+            if ($body && isset($body['message'])) {
+                $message = $body['message'];
+            } else {
+                $message = $response->getReasonPhrase();
+            }
+            throw new \Exception($message, $statusCode);
+        } elseif (
+            $statusCode == 404 ||
+            !$body ||
+            ($body && !isset($body[$this->getCollectionKey()]))
+        ) {
+            return false;
+        }
+        return $body;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function getData()
+    {
+        $responses = $this->get();
+        $collectionKey = $this->getCollectionKey();
+        $requests = $this->getRequests();
+        $item = null;
+        foreach ($responses as $key => $response) {
+            $body = $this->getBody($response);
+            if (!$body) {
+                unset($requests[$key]);
+                continue;
+            }
+            foreach ($body[$collectionKey] as $item) {
+                $this->values[] = $item;
+            }
+            if (!is_null($item)) {
+                $this->assignPage($requests[$key], $item);
+            }
+        }
+        $this->setRequests($requests);
     }
 }

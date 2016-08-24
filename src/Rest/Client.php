@@ -3,7 +3,7 @@
 namespace SimaLand\API\Rest;
 
 use \GuzzleHttp\ClientInterface;
-use SimaLand\API\InvalidArgumentException;
+use GuzzleHttp\Psr7\Response;
 use SimaLand\API\Object;
 
 /**
@@ -113,15 +113,13 @@ class Client extends Object
         }
         /** @var \GuzzleHttp\Psr7\Response[] $responses */
         $responses = \GuzzleHttp\Promise\unwrap($promises);
-        $result = [];
         foreach ($responses as $key => $response) {
             if ($response->getStatusCode() == 401) {
                 $this->deleteToken();
                 return $this->batchQuery($requests);
             }
-            $result[$key] = new Response($response);
         }
-        return $result;
+        return $responses;
     }
 
     /**

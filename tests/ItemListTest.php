@@ -50,7 +50,7 @@ class ItemListTest extends BaseCase
         $items->countThreads = 2;
         $items->keyThreads = 'id-mf';
         $result = [];
-        foreach ($items->batch() as $key => $item) {
+        foreach ($items as $key => $item) {
             $result[] = $item;
         }
         $this->assertEquals(30, count($result));
@@ -65,8 +65,7 @@ class ItemListTest extends BaseCase
         $this->setGuzzleHttpResponse(new Response(500, [], 'Invalid params'));
         $items = new ItemList($this->getClient());
         $items->countThreads = 1;
-        $iterator = $items->batch();
-        $iterator->rewind();
+        $items->rewind();
     }
 
     /**
@@ -78,7 +77,6 @@ class ItemListTest extends BaseCase
         $this->setResponse(['message' => 'Invalid params'], 500);
         $items = new ItemList($this->getClient());
         $items->countThreads = 1;
-        $iterator = $items->batch();
-        $iterator->rewind();
+        $items->rewind();
     }
 }
