@@ -57,7 +57,7 @@ class BaseCase extends \PHPUnit_Framework_TestCase
             $this->client = new Client([
                 'login' => 'test',
                 'password' => 'password',
-                'pathToken' => TEST_DIR . 'data'
+                'tokenPath' => TEST_DIR . 'data'
             ]);
             $this->client->setHttpClient($guzzleClient);
         }

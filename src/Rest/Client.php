@@ -36,7 +36,7 @@ class Client extends Object
      *
      * @var string
      */
-    public $pathToken;
+    public $tokenPath;
 
     /**
      * @var \GuzzleHttp\Client
@@ -250,16 +250,16 @@ class Client extends Object
      */
     private function getTokenFilename()
     {
-        if (is_null($this->pathToken)) {
-            $this->pathToken = sys_get_temp_dir();
+        if (is_null($this->tokenPath)) {
+            $this->tokenPath = sys_get_temp_dir();
         }
-        if (!file_exists($this->pathToken)) {
-            throw new \Exception("Path {$this->pathToken} not found");
+        if (!file_exists($this->tokenPath)) {
+            throw new \Exception("Path {$this->tokenPath} not found");
         }
-        if (substr($this->pathToken, -1) != '/') {
-            $this->pathToken .= '/';
+        if (substr($this->tokenPath, -1) != '/') {
+            $this->tokenPath .= '/';
         }
-        return $this->pathToken . 'token.txt';
+        return $this->tokenPath . 'token.txt';
     }
 
     /**

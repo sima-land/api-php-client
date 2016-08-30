@@ -22,7 +22,7 @@ class ClientTest extends BaseCase
         $client = new Client([
             'login' => 'test',
             'password' => 'password',
-            'pathToken' => TEST_DIR . "data"
+            'tokenPath' => TEST_DIR . "data"
         ]);
         $request = new Request([
             'entity' => 'test',
@@ -66,21 +66,21 @@ class ClientTest extends BaseCase
     {
         $client = $this->getClient();
         $this->setGuzzleHttpResponse(new Response(401, [], 'Unauthorized'));
-        $oldPathToken = $client->pathToken;
-        $client->pathToken = null;
+        $oldTokenPath = $client->tokenPath;
+        $client->tokenPath = null;
         $client->get('user');
-        $client->pathToken = $oldPathToken;
+        $client->tokenPath = $oldTokenPath;
     }
 
     /**
      * @expectedException \Exception
      */
-    public function testInvalidPathToken()
+    public function testInvalidTokenPath()
     {
         $client = new Client([
             'login' => 'test',
             'password' => 'password',
-            'pathToken' => TEST_DIR . 'fake'
+            'tokenPath' => TEST_DIR . 'fake'
         ]);
         $client->get('user');
     }
@@ -92,7 +92,7 @@ class ClientTest extends BaseCase
         $client = new Client([
             'login' => 'test',
             'password' => 'password',
-            'pathToken' => TEST_DIR . 'output'
+            'tokenPath' => TEST_DIR . 'output'
         ]);
         $client->deleteToken();
         $this->assertFileNotExists($filename);
@@ -101,8 +101,8 @@ class ClientTest extends BaseCase
     public function testGetToken()
     {
         $token = uniqid();
-        $pathToken = TEST_DIR . 'output';
-        $fileToken = $pathToken . "/token.txt";
+        $tokenPath = TEST_DIR . 'output';
+        $fileToken = $tokenPath . "/token.txt";
         file_put_contents($fileToken, 'token');
 
         $this->setGuzzleHttpResponse(new Response(401, [], 'Unauthorized'));
@@ -110,10 +110,10 @@ class ClientTest extends BaseCase
         $this->setGuzzleHttpResponse(new Response(200, [], 'ok'));
 
         $client = $this->getClient();
-        $oldPathToken = $client->pathToken;
-        $client->pathToken = $pathToken;
+        $oldTokenPath = $client->tokenPath;
+        $client->tokenPath = $tokenPath;
         $response = $client->get('user');
-        $client->pathToken = $oldPathToken;
+        $client->tokenPath = $oldTokenPath;
         $this->assertEquals('ok', $response->getBody()->getContents());
         $this->assertEquals($token, file_get_contents($fileToken));
         @unlink($fileToken);
