@@ -5,26 +5,25 @@ namespace SimaLand\API\Tests;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
-use PHPUnit\Framework\TestCase;
-use SimaLand\API\Client;
+use SimaLand\API\Rest\Client;
 
-class BaseCase extends TestCase
+class BaseCase extends \PHPUnit_Framework_TestCase
 {
-    /** @var \SimaLand\API\Client */
-    private $_client;
+    /** @var \SimaLand\API\Rest\Client */
+    private $client;
 
     /** @var \GuzzleHttp\Handler\MockHandler */
-    private $_mockGuzzleHandler;
+    private $mockGuzzleHandler;
 
     /**
      * @return \GuzzleHttp\Handler\MockHandler
      */
-    private function _getMockGuzzleHandler()
+    private function getMockGuzzleHandler()
     {
-        if (is_null($this->_mockGuzzleHandler)) {
-            $this->_mockGuzzleHandler = $this->_mockGuzzleHandler = new MockHandler();
+        if (is_null($this->mockGuzzleHandler)) {
+            $this->mockGuzzleHandler = new MockHandler();
         }
-        return $this->_mockGuzzleHandler;
+        return $this->mockGuzzleHandler;
     }
 
     /**
@@ -32,7 +31,7 @@ class BaseCase extends TestCase
      */
     protected function setGuzzleHttpResponse($response)
     {
-        $this->_getMockGuzzleHandler()->append($response);
+        $this->getMockGuzzleHandler()->append($response);
     }
 
     /**
@@ -48,16 +47,20 @@ class BaseCase extends TestCase
     }
 
     /**
-     * @return \SimaLand\API\Client
+     * @return \SimaLand\API\Rest\Client
      */
     protected function getClient()
     {
-        if (is_null($this->_client)) {
-            $handler = HandlerStack::create($this->_getMockGuzzleHandler());
+        if (is_null($this->client)) {
+            $handler = HandlerStack::create($this->getMockGuzzleHandler());
             $guzzleClient = new \GuzzleHttp\Client(['handler' => $handler]);
-            $this->_client = new Client();
-            $this->_client->setHttpClient($guzzleClient);
+            $this->client = new Client([
+                'login' => 'test',
+                'password' => 'password',
+                'tokenPath' => TEST_DIR . 'data'
+            ]);
+            $this->client->setHttpClient($guzzleClient);
         }
-        return $this->_client;
+        return $this->client;
     }
 }
