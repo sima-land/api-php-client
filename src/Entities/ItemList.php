@@ -16,6 +16,13 @@ class ItemList extends AbstractList
     public $keyThreads = 'id-mf';
 
     /**
+     * Ключ альтернативной пагинации.
+     *
+     * @var string
+     */
+    public $keyAlternativePagination = 'id-greater-than';
+
+    /**
      * @inheritdoc
      */
     public function getEntity()
@@ -36,7 +43,7 @@ class ItemList extends AbstractList
             $request->getParams = (array)$request->getParams;
         }
         if ($lastId > 0) {
-            $request->getParams[$this->keyThreads] = $lastId;
+            $request->getParams[$this->keyAlternativePagination] = $lastId;
         }
     }
 

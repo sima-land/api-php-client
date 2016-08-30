@@ -14,9 +14,11 @@ class ItemListTest extends BaseCase
         $itemList->assignPage($request);
         $this->assertEmpty($request->getParams);
         $itemList->assignPage($request, ['id' => 100]);
-        $this->assertEquals(100, $request->getParams[$itemList->keyThreads]);
+        $this->assertEquals(100, $request->getParams[$itemList->keyAlternativePagination]);
+        $itemList->assignThreadsNumber($request, 1);
         $itemList->assignPage($request, ['id' => 200]);
-        $this->assertEquals(200, $request->getParams[$itemList->keyThreads]);
+        $this->assertEquals(200, $request->getParams[$itemList->keyAlternativePagination]);
+        $this->assertEquals('5,1', $request->getParams[$itemList->keyThreads]);
     }
 
     public function testAssignThreadNumber()
