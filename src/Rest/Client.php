@@ -2,7 +2,8 @@
 
 namespace SimaLand\API\Rest;
 
-use \GuzzleHttp\ClientInterface;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Psr7\Response;
 use SimaLand\API\Object;
 
@@ -92,7 +93,7 @@ class Client extends Object
      * Установить http клиент.
      *
      * @param \GuzzleHttp\ClientInterface $httpClient
-     * @return \SimaLand\API\Rest\Client
+     * @return Client
      */
     public function setHttpClient(ClientInterface $httpClient)
     {
@@ -193,7 +194,7 @@ class Client extends Object
         $options = [];
         if (!is_null($request)) {
             if (!empty($request->getParams)) {
-                $options[\GuzzleHttp\RequestOptions::QUERY] = $request->getParams;
+                $options[RequestOptions::QUERY] = $request->getParams;
             }
         }
         $options = array_merge($this->options, $options);
