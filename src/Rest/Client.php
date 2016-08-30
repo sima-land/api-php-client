@@ -219,7 +219,6 @@ class Client extends Object
         $body = json_decode($response->getBody(), true);
         $this->token = $body['jwt'];
         file_put_contents($this->getTokenFilename(), $body['jwt']);
-
     }
 
     /**
