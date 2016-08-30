@@ -233,7 +233,7 @@ class Client extends Object
         $url = $this->baseUrl;
         $urlLen = strlen($url);
         $entityLen = strlen($entity);
-        if ($url[$urlLen - 1] != '/' and $entity[0] != '/') {
+        if ($url[$urlLen - 1] != '/' && $entity[0] != '/') {
             $url .= "/";
         }
         if ($entity[$entityLen - 1] != '/') {
