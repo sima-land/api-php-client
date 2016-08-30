@@ -11,6 +11,8 @@ use SimaLand\API\Rest\Request;
 class ItemList extends AbstractList
 {
     /**
+     * GET параметр отвечающий за поток.
+     *
      * @var string
      */
     public $keyThreads = 'id-mf';
