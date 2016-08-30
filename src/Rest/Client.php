@@ -7,14 +7,14 @@ use GuzzleHttp\Psr7\Response;
 use SimaLand\API\Object;
 
 /**
- * SimaLand Client.
+ * SimaLand клиент.
  *
  * @link https://www.sima-land.ru/api/v3/help/
  */
 class Client extends Object
 {
     /**
-     * Base url sima-land.ru
+     * Базовый url API sima-land.ru.
      *
      * @var string
      */
@@ -31,6 +31,8 @@ class Client extends Object
     public $password;
 
     /**
+     * Путь до токена.
+     *
      * @var string
      */
     public $pathToken;
@@ -46,6 +48,8 @@ class Client extends Object
     private $token;
 
     /**
+     * Базовые опции http запроса к API
+     *
      * @var array
      */
     private $options = [
@@ -60,7 +64,8 @@ class Client extends Object
      * @param array $options
      * @throws \Exception
      */
-    public function __construct(array $options = []) {
+    public function __construct(array $options = [])
+    {
         if (!isset($options['login'])) {
             throw new \Exception('Login can`t be empty');
         }
@@ -71,6 +76,8 @@ class Client extends Object
     }
 
     /**
+     * Получить http клиент.
+     *
      * @return \GuzzleHttp\Client
      */
     public function getHttpClient()
@@ -82,6 +89,8 @@ class Client extends Object
     }
 
     /**
+     * Установить http клиент.
+     *
      * @param \GuzzleHttp\ClientInterface $httpClient
      * @return \SimaLand\API\Rest\Client
      */
@@ -92,6 +101,8 @@ class Client extends Object
     }
 
     /**
+     * Групповой запрос к API.
+     *
      * @param array $requests
      * @return Response[]
      * @throws \Exception
@@ -100,7 +111,7 @@ class Client extends Object
     {
         $client = $this->getHttpClient();
         $promises = [];
-        foreach ($requests as $name => $request){
+        foreach ($requests as $name => $request) {
             if (!($request instanceof Request)) {
                 throw new \Exception('Request must be implement "\SimaLand\API\Rest\Request"');
             }
@@ -123,6 +134,8 @@ class Client extends Object
     }
 
     /**
+     * Запрос к API.
+     *
      * @param string $method
      * @param string $entity
      * @param array $getParams
@@ -142,6 +155,8 @@ class Client extends Object
     }
 
     /**
+     * GET запрос к API.
+     *
      * @param string $entity
      * @param array $getParams
      * @return Response
@@ -152,7 +167,7 @@ class Client extends Object
     }
 
     /**
-     * Delete token from file.
+     * Удалить файл с токеном.
      *
      * @return Client
      * @throws \Exception
@@ -168,7 +183,7 @@ class Client extends Object
     }
 
     /**
-     * Get options for http client.
+     * Получить опции для http клиента.
      *
      * @param Request|null $request
      * @return array
@@ -187,7 +202,7 @@ class Client extends Object
     }
 
     /**
-     * Authentication of the client sima-land
+     * Аутентификация пользователя.
      *
      * @throws \Exception
      */
@@ -208,7 +223,7 @@ class Client extends Object
     }
 
     /**
-     * Generate url of the baseUrl and entitys
+     * Создания url к сущности.
      *
      * @param string $entity
      * @return string
@@ -228,7 +243,7 @@ class Client extends Object
     }
 
     /**
-     * Get fullname token file.
+     * Получить полный путь до токена.
      *
      * @return string
      * @throws \Exception
@@ -241,14 +256,15 @@ class Client extends Object
         if (!file_exists($this->pathToken)) {
             throw new \Exception("Path {$this->pathToken} not found");
         }
-        if (substr($this->pathToken, -1) != '/')
-        {
+        if (substr($this->pathToken, -1) != '/') {
             $this->pathToken .= '/';
         }
         return $this->pathToken . 'token.txt';
     }
 
     /**
+     * Получить токен.
+     *
      * @return string
      * @throws \Exception
      */

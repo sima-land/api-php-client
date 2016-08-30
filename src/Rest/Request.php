@@ -5,26 +5,34 @@ namespace SimaLand\API\Rest;
 use SimaLand\API\Object;
 
 /**
- * Request for api simaland.
+ * Класс запроса к API simaland.
  */
 class Request extends Object
 {
     /**
+     * Наименование сущности.
+     *
      * @var string
      */
     public $entity;
 
     /**
+     * Метод запроса.
+     *
      * @var string
      */
     public $method = 'GET';
 
     /**
+     * GET параметры запроса.
+     *
      * @var array|null
      */
     public $getParams;
 
     /**
+     * POST параметры запроса.
+     *
      * @var array|null
      */
     public $postParams;

@@ -23,12 +23,13 @@ class ParserTest extends BaseCase
         $client = $this->getClient();
         $itemList = new ItemList($client);
         $itemList->countThreads = 1;
+        $itemStorage = new Csv(['filename' => TEST_DIR . 'output/item.csv']);
         $categoryList = new CategoryList($client);
         $categoryList->countThreads = 1;
-        $storage = new Csv(['path' => TEST_DIR . 'output']);
-        $parser = new Parser($storage);
-        $parser->setEntities([$itemList]);
-        $parser->addEntity($categoryList);
+        $categoryStorage = new Csv(['filename' => TEST_DIR . 'output/category.csv']);
+        $parser = new Parser();
+        $parser->addEntity($itemList, $itemStorage);
+        $parser->addEntity($categoryList, $categoryStorage);
         $parser->run();
 
         $actualItem = TEST_DIR . 'output/item.csv';

@@ -5,7 +5,7 @@ namespace SimaLand\API\Parser;
 use SimaLand\API\AbstractList;
 
 /**
- * Load and save all records of entities.
+ * Загрузка и сохранение всех записей сущностей.
  *
  * ```php
  *
@@ -14,10 +14,12 @@ use SimaLand\API\AbstractList;
  *     'password' => 'password'
  * ]);
  * $itemList = new \SimaLand\API\Entities\ItemList($client);
+ * $itemStorage = new Csv(['filename' => 'path/to/item.csv']);
  * $categoryList = new \SimaLand\API\Entities\CategoryList($client);
- * $storage = new Csv(['path' => 'path/to/dir']);
- * $parser = new Parser($storage);
- * $parser->setEntities([$itemList, $categoryList]);
+ * $categoryStorage = new Csv(['filename' => 'path/to/category.csv']);
+ * $parser = new Parser();
+ * $parser->addEntity($itemList, $itemStorage);
+ * $parser->addEntity($categoryList, $categoryStorage);
  * $parser->run();
  *
  * ```
@@ -25,55 +27,36 @@ use SimaLand\API\AbstractList;
 class Parser
 {
     /**
-     * @var StorageInterface
+     * @var array
      */
-    private $storage;
-
-    /**
-     * @var AbstractList[]
-     */
-    private $entities = [];
-
-    /**
-     * @param StorageInterface $storage
-     */
-    public function __construct(StorageInterface $storage)
-    {
-        $this->storage = $storage;
-    }
+    private $list = [];
 
     /**
      * @param AbstractList $entity
+     * @param StorageInterface $storage
      * @return Parser
      */
-    public function addEntity(AbstractList $entity)
+    public function addEntity(AbstractList $entity, StorageInterface $storage)
     {
-        $this->entities[] = $entity;
+        $this->list[] = [
+            'entity' => $entity,
+            'storage' => $storage
+        ];
         return $this;
     }
 
     /**
-     * @param AbstractList[] $entities
-     * @return Parser
-     */
-    public function setEntities(array $entities)
-    {
-        $this->entities = [];
-        foreach ($entities as $entity) {
-            $this->addEntity($entity);
-        }
-        return $this;
-    }
-
-    /**
-     * Load and save all records of entities.
+     * Run parser
      */
     public function run()
     {
-        foreach ($this->entities as $entity) {
-            $this->storage->setEntity($entity->getEntity());
+        foreach ($this->list as $el) {
+            /** @var AbstractList $entity */
+            $entity = $el['entity'];
+            /** @var StorageInterface  $storage */
+            $storage = $el['storage'];
             foreach ($entity as $item) {
-                $this->storage->save($item);
+                $storage->save($item);
             }
         }
     }

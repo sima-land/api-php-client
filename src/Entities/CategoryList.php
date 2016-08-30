@@ -4,12 +4,15 @@ namespace SimaLand\API\Entities;
 
 use SimaLand\API\AbstractList;
 
+/**
+ * Класс сущности категории.
+ */
 class CategoryList extends AbstractList
 {
     /**
      * @inheritdoc
      */
-    function getEntity()
+    public function getEntity()
     {
         return 'category';
     }

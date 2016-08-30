@@ -4,58 +4,66 @@ namespace SimaLand\API\Parser;
 
 use SimaLand\API\Object;
 
+/**
+ * Сохранение данных в *.csv файл.
+ */
 class Csv extends Object implements StorageInterface
 {
     /**
-     * @var string
-     */
-    public $path;
-
-    /**
+     * Символ разделения полей.
+     *
      * @var string
      */
     public $delimiter = ';';
 
     /**
+     * Символ разделителя текста.
+     *
      * @var string
      */
     public $enclosure = '"';
 
     /**
+     * Пулный путь до файла.
+     *
      * @var
      */
-    private $filename;
+    public $filename;
 
     /**
+     * Указатель на файл.
+     *
      * @var
      */
     private $fileHandler;
 
     /**
+     * Флаг записи название полей в файл.
+     *
      * @var bool
      */
     private $isSaveHeader = false;
 
     /**
-     * @param array $options
-     * @throws \Exception
+     * Открыть файл на запись
      */
-    public function __construct(array $options = [])
+    public function open()
     {
-        parent::__construct($options);
-        if (!file_exists($this->path)) {
-            throw new \Exception("Path '{$this->path}' not find");
+        if (is_null($this->fileHandler)) {
+            $this->fileHandler = fopen($this->filename, "w");
+            $this->isSaveHeader = false;
         }
     }
 
-    public function open()
-    {
-        $this->fileHandler = fopen($this->filename, "w");
-    }
-
+    /**
+     * Закрыть файл.
+     */
     public function close()
     {
-        fclose($this->fileHandler);
+        if ($this->fileHandler) {
+            fclose($this->fileHandler);
+            $this->fileHandler = null;
+        }
         $this->isSaveHeader = false;
     }
 
@@ -64,6 +72,7 @@ class Csv extends Object implements StorageInterface
      */
     public function save($item)
     {
+        $this->open();
         if (!$this->isSaveHeader) {
             $keys = array_keys($item);
             fputcsv($this->fileHandler, $keys, $this->delimiter, $this->enclosure);
@@ -73,16 +82,10 @@ class Csv extends Object implements StorageInterface
     }
 
     /**
-     * @inheritdoc
+     * Уничтожить объект.
      */
-    public function setEntity($entity)
+    public function __destruct()
     {
-        $path = $this->path;
-        if (substr($path, -1) != DIRECTORY_SEPARATOR) {
-            $path .= DIRECTORY_SEPARATOR;
-        }
-        $this->filename = $path . $entity . ".csv";
-        $this->isSaveHeader = false;
-        $this->open();
+        $this->close();
     }
 }

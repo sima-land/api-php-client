@@ -3,7 +3,7 @@
 namespace SimaLand\API;
 
 /**
- * Base class.
+ * Базовый класс.
  */
 class Object
 {

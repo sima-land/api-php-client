@@ -6,45 +6,58 @@ use GuzzleHttp\Psr7\Response;
 use SimaLand\API\Rest\Client;
 use SimaLand\API\Rest\Request;
 
+/**
+ * Абстрактный класс для загрузки данных сущности.
+ *
+ * Класс реализует интерфейс Iterator.
+ */
 abstract class AbstractList implements \Iterator
 {
     /**
-     * Count threads.
+     * Кол-во потоков.
      *
      * @var int
      */
     public $countThreads = 5;
 
     /**
-     * Key query param of thread.
+     * GET параметр отвечающий за поток.
      *
      * @var string
      */
     public $keyThreads = 'page';
 
     /**
-     * SimaLand Client for queries.
+     * SimaLand кдиент для запросов.
      *
      * @var \SimaLand\API\Rest\Client
      */
     private $client;
 
     /**
+     * Список запросов.
+     *
      * @var Request[]
      */
     private $requests = [];
 
     /**
+     * Список данных полученные по API.
+     *
      * @var array
      */
     private $values = [];
 
     /**
+     * Ключ текущей записи.
+     *
      * @var int
      */
     private $key;
 
     /**
+     * Текущая запись.
+     *
      * @var mixed
      */
     private $current;
@@ -58,13 +71,17 @@ abstract class AbstractList implements \Iterator
     }
 
     /**
+     * Получить наименование сущности.
+     *
      * @return string
      */
-    abstract function getEntity();
+    abstract public function getEntity();
 
     /**
+     * Назначить следующию страницу запросу.
+     *
      * @param Request $request
-     * @param null $item
+     * @param mixed $item
      */
     public function assignPage(Request &$request, $item = null)
     {
@@ -79,6 +96,8 @@ abstract class AbstractList implements \Iterator
     }
 
     /**
+     * Назначить номер потока для запроса.
+     *
      * @param Request $request
      * @param int $number
      */
@@ -89,13 +108,13 @@ abstract class AbstractList implements \Iterator
             return;
         }
         if (!is_array($request->getParams)) {
-            $request->getParams = (array) $request->getParams;
+            $request->getParams = (array)$request->getParams;
         }
         $request->getParams[$this->keyThreads] = $number;
     }
 
     /**
-     * Key which contains the entity of records.
+     * Наименование ключа содержащего набора данных сущности.
      *
      * @return string
      */
@@ -105,7 +124,9 @@ abstract class AbstractList implements \Iterator
     }
 
     /**
-     * @return Rest\Response[]
+     * Палучить набор данных сущности.
+     *
+     * @return Response[]
      * @throws \Exception
      */
     public function get()
@@ -114,6 +135,8 @@ abstract class AbstractList implements \Iterator
     }
 
     /**
+     * Установить запросы к API.
+     *
      * @param Request[] $requests
      * @throws \Exception
      */
@@ -129,6 +152,8 @@ abstract class AbstractList implements \Iterator
     }
 
     /**
+     * Получить запросы к API.
+     *
      * @return array|Rest\Request[]
      */
     public function getRequests()
@@ -197,6 +222,8 @@ abstract class AbstractList implements \Iterator
     }
 
     /**
+     * Получить тело ответа от API.
+     *
      * @param Response $response
      * @return bool
      * @throws \Exception
@@ -223,6 +250,8 @@ abstract class AbstractList implements \Iterator
     }
 
     /**
+     * Получить набор данных от API.
+     *
      * @throws \Exception
      */
     private function getData()
