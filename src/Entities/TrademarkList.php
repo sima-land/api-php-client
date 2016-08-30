@@ -12,7 +12,7 @@ class TrademarkList extends AbstractList
     /**
      * @inheritdoc
      */
-    function getEntity()
+    public function getEntity()
     {
         return 'trademark';
     }
