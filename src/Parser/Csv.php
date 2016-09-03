@@ -3,6 +3,7 @@
 namespace SimaLand\API\Parser;
 
 use SimaLand\API\Object;
+use SimaLand\API\Record;
 
 /**
  * Сохранение данных в *.csv файл.
@@ -50,8 +51,12 @@ class Csv extends Object implements StorageInterface
     public function open()
     {
         if (is_null($this->fileHandler)) {
-            $this->fileHandler = fopen($this->filename, "w");
-            $this->isSaveHeader = false;
+            if (file_exists($this->filename)) {
+                $this->isSaveHeader = true;
+            } else {
+                $this->isSaveHeader = false;
+            }
+            $this->fileHandler = fopen($this->filename, "a+");
         }
     }
 
@@ -70,9 +75,15 @@ class Csv extends Object implements StorageInterface
     /**
      * @@inheritdoc
      */
-    public function save($item)
+    public function save(Record $record)
     {
         $this->open();
+        $item = $record->data;
+        foreach ($item as $keys => $value) {
+            if (is_array($value)) {
+                unset($item[$keys]);
+            }
+        }
         if (!$this->isSaveHeader) {
             $keys = array_keys($item);
             fputcsv($this->fileHandler, $keys, $this->delimiter, $this->enclosure);

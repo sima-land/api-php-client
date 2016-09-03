@@ -5,7 +5,7 @@ namespace SimaLand\API\Entities;
 use SimaLand\API\AbstractList;
 
 /**
- * Класс сущности торговых марок.
+ * Сущности торговые мароки.
  */
 class TrademarkList extends AbstractList
 {

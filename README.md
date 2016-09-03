@@ -82,7 +82,13 @@ foreach ($responses as $response) {
 ## Парсер ##
 
 Парсер позволит загрузить все данные сущности и сохранить их в указанное место.
-Каждая сущность может делать одновременно несколько асинхронных запросов к API, что сократит время ожидания постраничной загрузки.
+Каждая сущность может делать одновременно несколько асинхронных запросов к API, что сократит время ожидания постраничной загрузки. 
+
+В конструктор парсера необходимо передать параметр `metaFilename` для хранения мета данных парсинга. Параметр хранить в себе полный путь до файла.
+Это необходимо для возобновления работы, если что-то пошло не так.
+
+Если вы хотите сбросить данные о уже загруженных сущностей достаточно вызвать метод `reset()` перед методом `run()` или вызвать метод `run(false)`,
+в этом случаи мета данные парсинга будут игнорироваться.
 
 В метод `addEntity` передается два объекта.
 Объект сущности и объект хранилища, который сохраняет данные.
@@ -100,11 +106,12 @@ $itemList = new \SimaLand\API\Entities\ItemList($client);
 $itemStorage = new \SimaLand\API\Parser\Csv(['filename' => 'path/to/item.csv']);
 $categoryList = new \SimaLand\API\Entities\CategoryList($client);
 $categoryStorage = new \SimaLand\API\Parser\Csv(['filename' => 'path/to/category.csv']);
-$parser = new \SimaLand\API\Parser\Parser();
+$parser = new \SimaLand\API\Parser\Parser(['metaFilename' => 'path/to/file']);
 $parser->addEntity($itemList, $itemStorage);
 $parser->addEntity($categoryList, $categoryStorage);
 $parser->run();
 ```
+
 ## Тесты ##
 
 Тесты запускаются из корневой директории пакета.
@@ -112,3 +119,7 @@ $parser->run();
 ```sh
 php ./vendor/bin/phpunit
 ```
+
+## Если что-то пошло не так ##
+Вы можете задать вопрос в [issue](https://github.com/sima-land/api-php-client/issues)
+

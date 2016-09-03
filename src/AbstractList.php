@@ -11,7 +11,7 @@ use SimaLand\API\Rest\Request;
  *
  * Класс реализует интерфейс Iterator.
  */
-abstract class AbstractList implements \Iterator
+abstract class AbstractList extends Object implements \Iterator
 {
     /**
      * Кол-во потоков.
@@ -26,6 +26,13 @@ abstract class AbstractList implements \Iterator
      * @var string
      */
     public $keyThreads = 'page';
+
+    /**
+     * Ключ альтернативной пагинации.
+     *
+     * @var string
+     */
+    public $keyAlternativePagination = 'id-greater-than';
 
     /**
      * SimaLand кдиент для запросов.
@@ -49,6 +56,13 @@ abstract class AbstractList implements \Iterator
     private $values = [];
 
     /**
+     * GET параметры запроса.
+     *
+     * @var array
+     */
+    public $getParams = [];
+
+    /**
      * Ключ текущей записи.
      *
      * @var int
@@ -64,10 +78,12 @@ abstract class AbstractList implements \Iterator
 
     /**
      * @param Client $client
+     * @param array $options
      */
-    public function __construct(Client $client)
+    public function __construct(Client $client, array $options = [])
     {
         $this->client = $client;
+        parent::__construct($options);
     }
 
     /**
@@ -78,12 +94,24 @@ abstract class AbstractList implements \Iterator
     abstract public function getEntity();
 
     /**
+     * Добавить get параметры.
+     *
+     * @param array $params
+     * @return AbstractList
+     */
+    public function addGetParams(array $params)
+    {
+        $this->getParams = array_merge($this->getParams, $params);
+        return $this;
+    }
+
+    /**
      * Назначить следующию страницу запросу.
      *
      * @param Request $request
-     * @param mixed $item
+     * @param Record|null $record
      */
-    public function assignPage(Request &$request, $item = null)
+    public function assignPage(Request &$request, Record $record = null)
     {
         $currentPage = 1;
         if (!is_array($request->getParams)) {
@@ -103,14 +131,13 @@ abstract class AbstractList implements \Iterator
      */
     public function assignThreadsNumber(Request &$request, $number = 0)
     {
-        $number++;
-        if ($number == 1) {
-            return;
-        }
         if (!is_array($request->getParams)) {
             $request->getParams = (array)$request->getParams;
         }
-        $request->getParams[$this->keyThreads] = $number;
+        if (!isset($request->getParams[$this->keyThreads])) {
+            $request->getParams[$this->keyThreads] = 1;
+        }
+        $request->getParams[$this->keyThreads] += $number;
     }
 
     /**
@@ -121,6 +148,16 @@ abstract class AbstractList implements \Iterator
     public function getCollectionKey()
     {
         return 'items';
+    }
+
+    /**
+     * Наименование ключа содержащего мета данные.
+     *
+     * @return string
+     */
+    public function getMetaKey()
+    {
+        return '_meta';
     }
 
     /**
@@ -164,11 +201,15 @@ abstract class AbstractList implements \Iterator
                 for ($i = 0; $i < $this->countThreads; $i++) {
                     $requests[$i] = new Request([
                         'entity' => $this->getEntity(),
+                        'getParams' => $this->getParams,
                     ]);
                     $this->assignThreadsNumber($requests[$i], $i);
                 }
             } else {
-                $requests[] = new Request(['entity' => $this->getEntity()]);
+                $requests[] = new Request([
+                    'entity' => $this->getEntity(),
+                    'getParams' => $this->getParams,
+                ]);
             }
             $this->requests = $requests;
         }
@@ -258,8 +299,9 @@ abstract class AbstractList implements \Iterator
     {
         $responses = $this->get();
         $collectionKey = $this->getCollectionKey();
+        $metaKey = $this->getMetaKey();
         $requests = $this->getRequests();
-        $item = null;
+        $record = null;
         foreach ($responses as $key => $response) {
             $body = $this->getBody($response);
             if (!$body) {
@@ -267,10 +309,14 @@ abstract class AbstractList implements \Iterator
                 continue;
             }
             foreach ($body[$collectionKey] as $item) {
-                $this->values[] = $item;
+                $record = new Record([
+                    'data' => $item,
+                    'meta' => isset($body[$metaKey]) ? $body[$metaKey] : null,
+                ]);
+                $this->values[] = $record;
             }
-            if (!is_null($item)) {
-                $this->assignPage($requests[$key]);
+            if (!is_null($record)) {
+                $this->assignPage($requests[$key], $record);
             }
         }
         $this->setRequests($requests);
