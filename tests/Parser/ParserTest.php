@@ -84,7 +84,7 @@ class ParserTest extends BaseCase
         $itemStorage = new Csv(['filename' => $actualItem]);
         $parser = new Parser([
             'metaFilename' => $this->getMetaFilename(),
-            'countRecordsSave' => 2,
+            'iterationCount' => 2,
         ]);
         $parser->addEntity($itemList, $itemStorage);
         try {

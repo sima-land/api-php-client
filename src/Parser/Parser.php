@@ -28,7 +28,12 @@ use SimaLand\API\Record;
  */
 class Parser extends Object
 {
-    public $countRecordsSave = 1000;
+    /**
+     * Кол-во итерация после которого сохраняются мета данные.
+     *
+     * @var int
+     */
+    public $iterationCount = 1000;
 
     /**
      * @var array
@@ -107,12 +112,11 @@ class Parser extends Object
                 }
                 $entity->addGetParams($this->metaData[$entityName]);
             }
-            /** @var StorageInterface  $storage */
+            /** @var StorageInterface $storage */
             $storage = $el['storage'];
             foreach ($entity as $key => $record) {
                 if ($continue) {
-                    $this->fillMetaData($entity, $record, $key);
-                    $this->saveMetaData();
+                    $this->fillAndSaveMetaData($entity, $record, $key);
                 }
                 $storage->save($record);
             }
@@ -132,7 +136,7 @@ class Parser extends Object
             return;
         }
         $data = file_get_contents($this->metaFilename);
-        $this->metaData = json_decode($data, true);
+        $this->metaData = (array)json_decode($data, true);
     }
 
     /**
@@ -142,35 +146,30 @@ class Parser extends Object
      * @param Record $record
      * @param int $i
      */
-    private function fillMetaData(AbstractList $entity, Record $record, $i)
+    private function fillAndSaveMetaData(AbstractList $entity, Record $record, $i)
     {
         $entityName = $entity->getEntity();
+        $pageKey = $record->meta ? $entity->keyThreads : $entity->keyAlternativePagination;
+        if (!isset($this->metaData[$entityName])) {
+            $this->metaData[$entityName] = [
+                $pageKey => null,
+                'perPage' => $record->meta['perPage'],
+            ];
+            return;
+        }
         if ($record->meta) {
-            if (!isset($this->metaData[$entityName])) {
-                $this->metaData[$entityName] = [
-                    $entity->keyThreads => $record->meta['currentPage'],
-                    'perPage' => $record->meta['perPage'],
-                ];
+            if ($this->metaData[$entityName][$pageKey] == $record->meta['currentPage']) {
                 return;
             }
-            if ($this->metaData[$entityName][$entity->keyThreads] == $record->meta['currentPage']) {
-                return;
-            }
-            $this->metaData[$entityName][$entity->keyThreads] = $record->meta['currentPage'];
+            $this->metaData[$entityName][$pageKey] = $record->meta['currentPage'];
         } else {
             $id = $record->data['id'];
-            if (!isset($this->metaData[$entityName])) {
-                $this->metaData[$entityName] = [
-                    $entity->keyAlternativePagination => $id,
-                    'perPage' => isset($entity->getParams['perPage']) ? $entity->getParams['perPage'] : null,
-                ];
+            if ($i % $this->iterationCount != 0) {
                 return;
             }
-            if ($i % $this->countRecordsSave != 0) {
-                return;
-            }
-            $this->metaData[$entityName][$entity->keyAlternativePagination] = $id;
+            $this->metaData[$entityName][$pageKey] = $id;
         }
+        $this->saveMetaData();
     }
 
     /**

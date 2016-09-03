@@ -27,6 +27,15 @@ class ItemList extends AbstractList
     }
 
     /**
+     * GET параметры запроса.
+     *
+     * @var array
+     */
+    public $getParams = [
+        'id-greater-than' => 0
+    ];
+
+    /**
      * @inheritdoc
      */
     public function assignPage(Request &$request, Record $record = null)
