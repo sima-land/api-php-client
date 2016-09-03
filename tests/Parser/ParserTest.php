@@ -113,7 +113,7 @@ class ParserTest extends BaseCase
     public function testSaveMetaPage()
     {
         @unlink($this->getMetaFilename());
-        $actualFile= TEST_DIR . 'output/category.csv';
+        $actualFile = TEST_DIR . 'output/category.csv';
         $body = require(TEST_DIR . "/data/category.php");
         $this->setResponse($body);
         $body['_meta']['currentPage'] = 2;
@@ -138,7 +138,7 @@ class ParserTest extends BaseCase
     public function testFinishParseEntity()
     {
         @unlink($this->getMetaFilename());
-        $actualFile= TEST_DIR . 'output/category.csv';
+        $actualFile = TEST_DIR . 'output/category.csv';
         $body = require(TEST_DIR . "/data/category.php");
         $body['items'] = [];
         $this->setResponse($body);
@@ -167,7 +167,8 @@ class ParserTest extends BaseCase
      * @param $filename
      * @return array
      */
-    private function getFileData($filename) {
+    private function getFileData($filename)
+    {
         $fh = fopen($filename, "r");
         $data = [];
         while (!feof($fh)) {
