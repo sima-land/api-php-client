@@ -33,7 +33,7 @@ class ClientTest extends BaseCase
             [
                 'http_errors' => false,
                 'headers' => [
-                    'User-Agent' => 'Sima-land api-php-client/0.1',
+                    'User-Agent' => 'Sima-land api-php-client/1.0',
                     'Content-Type' => 'application/json',
                     'Authorization' => 'Bearer token',
                 ],
