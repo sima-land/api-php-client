@@ -5,7 +5,7 @@ namespace SimaLand\API\Entities;
 use SimaLand\API\AbstractList;
 
 /**
- * Сущность страна.
+ * Страны.
  */
 class CountryList extends AbstractList
 {

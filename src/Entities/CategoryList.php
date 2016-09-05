@@ -5,7 +5,7 @@ namespace SimaLand\API\Entities;
 use SimaLand\API\AbstractList;
 
 /**
- * Сущность категория.
+ * Категории.
  */
 class CategoryList extends AbstractList
 {

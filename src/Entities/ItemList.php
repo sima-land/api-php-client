@@ -7,7 +7,7 @@ use SimaLand\API\Record;
 use SimaLand\API\Rest\Request;
 
 /**
- * Сущность товар.
+ * Товары.
  */
 class ItemList extends AbstractList
 {

@@ -5,7 +5,7 @@ namespace SimaLand\API\Entities;
 use SimaLand\API\AbstractList;
 
 /**
- * Сущность серии товаров.
+ * Серии.
  */
 class SeriesList extends AbstractList
 {
