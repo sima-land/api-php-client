@@ -13,7 +13,7 @@
 ## Установка ##
 
 ```sh
-composer require "simaland/api-php-client": "~1"
+composer require "sima-land/api-php-client": "~1"
 ```
 
 ## Документация API ##
