@@ -40,12 +40,15 @@ class ParserTest extends BaseCase
         @unlink($this->getMetaFilename());
 
         $client = $this->getClient();
+
         $itemList = new ItemList($client);
         $itemList->countThreads = 1;
         $itemStorage = new Csv(['filename' => TEST_DIR . 'output/item.csv']);
+
         $categoryList = new CategoryList($client);
         $categoryList->countThreads = 1;
         $categoryStorage = new Csv(['filename' => TEST_DIR . 'output/category.csv']);
+
         $parser = new Parser(['metaFilename' => $this->getMetaFilename()]);
         $parser->addEntity($itemList, $itemStorage);
         $parser->addEntity($categoryList, $categoryStorage);
@@ -53,6 +56,7 @@ class ParserTest extends BaseCase
 
         $this->assertEquals(md5_file($expectedItem), md5_file($actualItem));
         $this->assertEquals(md5_file($expectedCategory), md5_file($actualCategory));
+
         @unlink($actualItem);
         @unlink($actualCategory);
     }
@@ -63,6 +67,8 @@ class ParserTest extends BaseCase
         $actualItem = TEST_DIR . 'output/item.csv';
         @unlink($actualItem);
         @unlink($this->getMetaFilename());
+
+        // формируем список товаров для 2х запросов
         $body1 = $body2 = require(TEST_DIR . "/data/item.php");
         $countItems = count($body1['items']);
         for ($i = 0; $i < $countItems; $i++) {
@@ -79,22 +85,31 @@ class ParserTest extends BaseCase
         $this->setGuzzleHttpResponse(new Response(404, [], 'Not Found'));
 
         $client = $this->getClient();
+
+        // эмулируем 500 ошибку на сервере и падение парсера
+
         $itemList = new ItemList($client);
         $itemList->countThreads = 1;
         $itemStorage = new Csv(['filename' => $actualItem]);
+
         $parser = new Parser([
             'metaFilename' => $this->getMetaFilename(),
             'iterationCount' => 2,
         ]);
         $parser->addEntity($itemList, $itemStorage);
+
         try {
             $parser->run();
             $this->fail('The parser should generate an error');
         } catch (\Exception $e) {
         }
+
+        // возобновление парсинга после сбоя на сервере
+
         $itemList = new ItemList($client);
         $itemList->countThreads = 1;
         $itemStorage = new Csv(['filename' => $actualItem]);
+
         $parser = new Parser(['metaFilename' => $this->getMetaFilename()]);
         $parser->addEntity($itemList, $itemStorage);
         $parser->run();
@@ -123,15 +138,16 @@ class ParserTest extends BaseCase
         $client = $this->getClient();
         $categoryList = new CategoryList($client, ['countThreads' => 1]);
         $categoryStorage = new Csv(['filename' => $actualFile]);
+
         $parser = new Parser(['metaFilename' => $this->getMetaFilename()]);
         $parser->addEntity($categoryList, $categoryStorage);
         $parser->run();
-
 
         $metaData = file_get_contents($this->getMetaFilename());
         $metaData = json_decode($metaData, true);
         $this->assertEquals(2, $metaData['category']['page']);
         $parser->reset();
+
         @unlink($actualFile);
     }
 
@@ -141,11 +157,14 @@ class ParserTest extends BaseCase
         $actualFile = TEST_DIR . 'output/category.csv';
         $body = require(TEST_DIR . "/data/category.php");
         $body['items'] = [];
+
+        // задаем только один ответ
         $this->setResponse($body);
 
         $client = $this->getClient();
         $categoryList = new CategoryList($client, ['countThreads' => 1]);
         $categoryStorage = new Csv(['filename' => $actualFile]);
+
         $parser = new Parser(['metaFilename' => $this->getMetaFilename()]);
         $parser->addEntity($categoryList, $categoryStorage);
         $parser->run();
@@ -153,6 +172,8 @@ class ParserTest extends BaseCase
         $metaData = file_get_contents($this->getMetaFilename());
         $metaData = json_decode($metaData, true);
         $this->assertTrue($metaData['category']['finish']);
+
+        // проверяем что повторый запуск парсинга не отрабатывает
 
         $parser = new Parser(['metaFilename' => $this->getMetaFilename()]);
         $parser->addEntity($categoryList, $categoryStorage);

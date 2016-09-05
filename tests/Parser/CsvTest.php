@@ -14,12 +14,15 @@ class CsvTest extends BaseCase
         $expectedFile = TEST_DIR . 'data/item.csv';
         $actualFile = TEST_DIR . 'output/item.csv';
         @unlink($actualFile);
+
         $storage = new Csv(['filename' => TEST_DIR . 'output' . DIRECTORY_SEPARATOR . "/item.csv"]);
         foreach ($item['items'] as $item) {
             $record = new Record(['data' => $item]);
             $storage->save($record);
         }
+
         $this->assertEquals(md5_file($expectedFile), md5_file($actualFile));
+
         @unlink($actualFile);
     }
 }
