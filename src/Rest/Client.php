@@ -39,7 +39,7 @@ class Client extends Object
     public $tokenPath;
 
     /**
-     * @var \GuzzleHttp\Client
+     * @var \GuzzleHttp\ClientInterface
      */
     private $httpClient;
 
@@ -79,7 +79,7 @@ class Client extends Object
     /**
      * Получить http клиент.
      *
-     * @return \GuzzleHttp\Client
+     * @return \GuzzleHttp\ClientInterface
      */
     public function getHttpClient()
     {
@@ -212,7 +212,7 @@ class Client extends Object
         $client = $this->getHttpClient();
         $options = $this->options;
         $options['headers']['Authorization'] = 'Basic ' . base64_encode($this->login . ":" . $this->password);
-        $response = $client->get($this->createUrl('auth'), $options);
+        $response = $client->request('GET', $this->createUrl('auth'), $options);
         if ($response->getStatusCode() != 200) {
             throw new \Exception($response->getReasonPhrase(), $response->getStatusCode());
         }

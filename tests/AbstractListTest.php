@@ -2,6 +2,7 @@
 
 namespace SimaLand\API\Tests;
 
+use GuzzleHttp\Psr7\Response;
 use SimaLand\API\Rest\Request;
 
 class AbstractListTest extends BaseCase
@@ -40,6 +41,15 @@ class AbstractListTest extends BaseCase
     public function testSetGetRequests()
     {
         $abstractObject = $this->getAbstractObject();
+
+        $abstractObject->getParams = ['sort' => 'id'];
+        $requests = $abstractObject->getRequests();
+        $this->assertEquals($abstractObject->countThreads, count($requests));
+        foreach ($requests as $request) {
+            $this->assertArrayHasKey('sort', $request->getParams);
+            $this->assertEquals('id', $request->getParams['sort']);
+        }
+
         $abstractObject->setRequests([
             new Request(['entity' => 'item']),
             new Request(),
@@ -57,6 +67,14 @@ class AbstractListTest extends BaseCase
         $abstractObject->setRequests(['test']);
     }
 
+    public function testAddGetParams()
+    {
+        $abstractObject = $this->getAbstractObject();
+        $abstractObject->getParams = ['page' => 2];
+        $abstractObject->addGetParams(['page' => 3, 'perPage' => 10]);
+        $this->assertEquals(['page' => 3, 'perPage' => 10], $abstractObject->getParams);
+    }
+
     public function testAssignPage()
     {
         $abstractObject = $this->getAbstractObject();
@@ -71,12 +89,26 @@ class AbstractListTest extends BaseCase
     {
         $abstractObject = $this->getAbstractObject();
         $request = new \SimaLand\API\Rest\Request();
+
         $abstractObject->assignThreadsNumber($request, 0);
-        $this->assertEmpty($request->getParams);
+        $this->assertEquals(1, $request->getParams[$abstractObject->keyThreads]);
+
+        $request->getParams = [];
         $abstractObject->assignThreadsNumber($request, 1);
         $this->assertEquals(2, $request->getParams[$abstractObject->keyThreads]);
+
+        $request->getParams = [];
         $abstractObject->assignThreadsNumber($request, 2);
         $this->assertEquals(3, $request->getParams[$abstractObject->keyThreads]);
+
+        $abstractObject->getParams = ['page' => 5];
+        $request->getParams = $abstractObject->getParams;
+        $abstractObject->assignThreadsNumber($request, 0);
+        $this->assertEquals(5, $request->getParams[$abstractObject->keyThreads]);
+
+        $request->getParams = $abstractObject->getParams;
+        $abstractObject->assignThreadsNumber($request, 1);
+        $this->assertEquals(6, $request->getParams[$abstractObject->keyThreads]);
     }
 
     public function testGet()
@@ -120,5 +152,21 @@ class AbstractListTest extends BaseCase
         $this->assertInstanceOf('GuzzleHttp\Psr7\Response', $response);
         $body = json_decode($response->getBody(), true);
         $this->assertEquals($body2['items'], $body['items']);
+    }
+
+    public function testIteration()
+    {
+        $this->setResponse($this->category);
+        $this->setResponse($this->category);
+        $this->setGuzzleHttpResponse(new Response(404, [], 'Not Found'));
+        $abstractObject = $this->getAbstractObject();
+        $abstractObject->countThreads = 1;
+        foreach ($abstractObject as $item) {
+            $this->assertInstanceOf('\SimaLand\API\Record', $item);
+            $this->assertNotEmpty($item->data);
+            $this->assertArrayHasKey('id', $item->data);
+            $this->assertNotEmpty($item->meta);
+            $this->assertEquals(44752, $item->meta['totalCount']);
+        }
     }
 }

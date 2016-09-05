@@ -3,10 +3,11 @@
 namespace SimaLand\API\Entities;
 
 use SimaLand\API\AbstractList;
+use SimaLand\API\Record;
 use SimaLand\API\Rest\Request;
 
 /**
- * Класс сущности товаров.
+ * Товары.
  */
 class ItemList extends AbstractList
 {
@@ -18,13 +19,6 @@ class ItemList extends AbstractList
     public $keyThreads = 'id-mf';
 
     /**
-     * Ключ альтернативной пагинации.
-     *
-     * @var string
-     */
-    public $keyAlternativePagination = 'id-greater-than';
-
-    /**
      * @inheritdoc
      */
     public function getEntity()
@@ -33,13 +27,22 @@ class ItemList extends AbstractList
     }
 
     /**
+     * GET параметры запроса.
+     *
+     * @var array
+     */
+    public $getParams = [
+        'id-greater-than' => 0
+    ];
+
+    /**
      * @inheritdoc
      */
-    public function assignPage(Request &$request, $item = null)
+    public function assignPage(Request &$request, Record $record = null)
     {
         $lastId = 0;
-        if ($item) {
-            $lastId = (int)$item['id'];
+        if ($record && $record->data) {
+            $lastId = (int)$record->data['id'];
         }
         if (!is_array($request->getParams)) {
             $request->getParams = (array)$request->getParams;

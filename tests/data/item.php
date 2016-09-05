@@ -8,6 +8,10 @@ return [
             'name' => 'Картина 25*20 см с изображением природы 5569  64V-5569',
             'slug' => 'kartina-2520-sm-s-izobrazheniem-prirody-5569-64v-5569',
             'balance' => 0,
+            'country' => [
+                'id' => 1,
+                'Москва'
+            ],
         ],
         [
             'id' => 785,
@@ -16,6 +20,10 @@ return [
             'name' => 'Маятник молекула',
             'slug' => 'mayatnik-molekula',
             'balance' => 0,
+            'country' => [
+                'id' => 1,
+                'Москва'
+            ],
         ],
         [
             'id' => 909,
@@ -24,6 +32,10 @@ return [
             'name' => 'Швабра  917,034',
             'slug' => 'shvabra-917034-2',
             'balance' => 0,
+            'country' => [
+                'id' => 1,
+                'Москва'
+            ],
         ],
         [
             'id' => 3181,
@@ -32,6 +44,10 @@ return [
             'name' => 'Мотоцикл 3019 р/у',
             'slug' => 'motocikl-3019-r-u',
             'balance' => 0,
+            'country' => [
+                'id' => 1,
+                'Москва'
+            ],
         ],
         [
             'id' => 4098,
@@ -40,6 +56,10 @@ return [
             'name' => 'Украшение венок+дед мороз (24 шт)',
             'slug' => 'ukrashenie-venok-plusded-moroz-24-sht',
             'balance' => 0,
+            'country' => [
+                'id' => 1,
+                'Москва'
+            ],
         ],
         [
             'id' => 4099,
@@ -48,28 +68,10 @@ return [
             'name' => 'Украшение венок+дед мороз (24 шт)',
             'slug' => 'ukrashenie-venok-plusded-moroz-24-sht',
             'balance' => 0,
+            'country' => [
+                'id' => 1,
+                'Москва'
+            ],
         ],
     ],
-    '_links' =>
-        [
-            'self' =>
-                [
-                    'href' => 'https://www.sima-land.ru/api/v3/item/?page=1',
-                ],
-            'next' =>
-                [
-                    'href' => 'https://www.sima-land.ru/api/v3/item/?page=2',
-                ],
-            'last' =>
-                [
-                    'href' => 'https://www.sima-land.ru/api/v3/item/?page=24399',
-                ],
-        ],
-    '_meta' =>
-        [
-            'totalCount' => 1219940,
-            'pageCount' => 24399,
-            'currentPage' => 1,
-            'perPage' => 50,
-        ],
 ];

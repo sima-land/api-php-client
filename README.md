@@ -3,9 +3,7 @@
 
 # api-php-client
 
-Клиент для работы с API сайта sima-land.ru
-
-Клиент позволяет выкачивать каталог товаров с сайта sima-land.ru. 
+Клиент для работы с API сайта sima-land.ru Позволяет выкачивать каталог товаров с сайта sima-land.ru.
 
 ## Требования ##
 
@@ -22,10 +20,16 @@ composer require "simaland/api-php-client": "0.1"
 
 * [https://www.sima-land.ru/api/v3/help/](https://www.sima-land.ru/api/v3/help/)
 
+## Возможности ##
+* Формирование HTTP запросов, авторизация
+* Асинхронные запросы на получение данных
+* Получение каталога
+* Возобновление скачивания данных после сбоя
+
 ## API клиент ##
 
 Клиент позволяет делать произвольные запросы к API sima-land.ru, формирует все необходимые для этого заголовки.
-Клиент умеет делать одновременно несколько асинхронных запросов.
+Умеет делать одновременно несколько асинхронных запросов.
 
 ### Авторизация ###
 
@@ -81,30 +85,51 @@ foreach ($responses as $response) {
 
 ## Парсер ##
 
-Парсер позволит загрузить все данные сущности и сохранить их в указанное место.
-Каждая сущность может делать одновременно несколько асинхронных запросов к API, что сократит время ожидания постраничной загрузки.
+Парсер позволит загрузить все данные и сохранить их в указанное место.
+Может делать одновременно несколько асинхронных запросов к API, что сократит время ожидания постраничной загрузки.
 
-В метод `addEntity` передается два объекта.
-Объект сущности и объект хранилища, который сохраняет данные.
+Для возобновления работы парсера, если что-то пошло не так, в конструктор нужно передать параметер `metaFilename`. Который
+представляет собой полный путь до файла.
+
+Если вы хотите заново загрузить данные, достаточно вызвать метод `reset()` перед методом `run()`.
+В случае вызова `run(false)` парсер проигнорирует текущую позицию.
 
 Объект хранилища должен реализовать интерфейс `\SimaLand\API\Parser\StorageInterface`
 
 ### Пример использования парсера ###
 
+Выкачивание данных каталога
 ```php
 $client = new \SimaLand\API\Rest\Client([
     'login' => 'login',
     'password' => 'password'
 ]);
-$itemList = new \SimaLand\API\Entities\ItemList($client);
+
+$parser = new \SimaLand\API\Parser\Parser(['metaFilename' => 'path/to/file']);
+
+// добавляем список товаров
 $itemStorage = new \SimaLand\API\Parser\Csv(['filename' => 'path/to/item.csv']);
-$categoryList = new \SimaLand\API\Entities\CategoryList($client);
-$categoryStorage = new \SimaLand\API\Parser\Csv(['filename' => 'path/to/category.csv']);
-$parser = new \SimaLand\API\Parser\Parser();
+$itemList = new \SimaLand\API\Entities\ItemList($client);
 $parser->addEntity($itemList, $itemStorage);
+
+// добавляем список категорий
+$categoryStorage = new \SimaLand\API\Parser\Csv(['filename' => 'path/to/category.csv']);
+$categoryList = new \SimaLand\API\Entities\CategoryList($client);
 $parser->addEntity($categoryList, $categoryStorage);
+
 $parser->run();
 ```
+
+Возобновление после сбоя (сетевые проблемы, ошибки сервера и т.п.)
+```php
+// забываем текущую позицию и начинаем парсинг заново
+$parser->reset();
+$parser->run();
+
+// игнорируем текущую позицию и начинаем парсинг заново
+$parser->run(false);
+```
+
 ## Тесты ##
 
 Тесты запускаются из корневой директории пакета.
@@ -112,3 +137,7 @@ $parser->run();
 ```sh
 php ./vendor/bin/phpunit
 ```
+
+## Если что-то пошло не так ##
+Вы можете задать вопрос в [issue](https://github.com/sima-land/api-php-client/issues)
+

@@ -4,6 +4,7 @@ namespace SimaLand\API\Tests;
 
 use GuzzleHttp\Psr7\Response;
 use SimaLand\API\Entities\ItemList;
+use SimaLand\API\Record;
 
 class ItemListTest extends BaseCase
 {
@@ -11,12 +12,18 @@ class ItemListTest extends BaseCase
     {
         $itemList = new ItemList($this->getClient());
         $request = new \SimaLand\API\Rest\Request();
+
         $itemList->assignPage($request);
         $this->assertEmpty($request->getParams);
-        $itemList->assignPage($request, ['id' => 100]);
+
+        $record = new Record();
+        $record->data['id'] = 100;
+        $itemList->assignPage($request, $record);
         $this->assertEquals(100, $request->getParams[$itemList->keyAlternativePagination]);
+
         $itemList->assignThreadsNumber($request, 1);
-        $itemList->assignPage($request, ['id' => 200]);
+        $record->data['id'] = 200;
+        $itemList->assignPage($request, $record);
         $this->assertEquals(200, $request->getParams[$itemList->keyAlternativePagination]);
         $this->assertEquals('5,1', $request->getParams[$itemList->keyThreads]);
     }
