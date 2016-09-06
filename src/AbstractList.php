@@ -5,6 +5,7 @@ namespace SimaLand\API;
 use GuzzleHttp\Psr7\Response;
 use SimaLand\API\Rest\Client;
 use SimaLand\API\Rest\Request;
+use SimaLand\API\Rest\ResponseException;
 
 /**
  * Абстрактный класс для загрузки данных сущности.
@@ -35,6 +36,28 @@ abstract class AbstractList extends Object implements \Iterator
     public $keyAlternativePagination = 'id-greater-than';
 
     /**
+     * GET параметры запроса.
+     *
+     * @var array
+     */
+    public $getParams = [];
+
+    /**
+     * Кол-во повторов обращение к ресурсу при ошибках.
+     *
+     * @var int
+     */
+    public $repeatTimeout = 30;
+
+    /**
+     * Время в секундак до следующего обращения к ресурсу.
+     *
+     * @var int
+     */
+    public $repeatCount = 30;
+
+
+    /**
      * SimaLand кдиент для запросов.
      *
      * @var \SimaLand\API\Rest\Client
@@ -54,13 +77,6 @@ abstract class AbstractList extends Object implements \Iterator
      * @var array
      */
     private $values = [];
-
-    /**
-     * GET параметры запроса.
-     *
-     * @var array
-     */
-    public $getParams = [];
 
     /**
      * Ключ текущей записи.
@@ -263,25 +279,62 @@ abstract class AbstractList extends Object implements \Iterator
     }
 
     /**
+     * Обработка ответов от API.
+     *
+     * @param Response[] $responses
+     * @throws ResponseException
+     */
+    private function processingResponses(array $responses)
+    {
+        foreach ($responses as $response) {
+            $statusCode = $response->getStatusCode();
+            if (($statusCode < 200 || $statusCode >= 300) && $statusCode != 404) {
+                throw new ResponseException($response);
+            }
+        }
+    }
+
+    /**
+     * Получение ответов от API
+     *
+     * @return \GuzzleHttp\Psr7\Response[]
+     * @throws \Exception
+     */
+    private function getResponses()
+    {
+        $i = 0;
+        $responses = [];
+        do {
+            $e = null;
+            if ($i > 0) {
+                sleep($this->repeatTimeout);
+            }
+            try {
+                $responses = $this->get();
+                $this->processingResponses($responses);
+            } catch (\GuzzleHttp\Exception\RequestException $e) {
+                // Игнорируем ошибку запроса к ресурсу.
+            } catch (\SimaLand\API\Exception $e) {
+                // Игнорируем ошибку ответа ресурса.
+            }
+            $i++;
+        } while ($i <= $this->repeatCount && !is_null($e));
+        if ($e) {
+            throw new Exception($e->getMessage(), $e->getCode(), $e);
+        }
+        return $responses;
+    }
+
+    /**
      * Получить тело ответа от API.
      *
      * @param Response $response
      * @return bool
-     * @throws \Exception
      */
     private function getBody(Response $response)
     {
         $body = json_decode($response->getBody(), true);
-        $statusCode = $response->getStatusCode();
-        if (($statusCode < 200 || $statusCode >= 300) && $statusCode != 404) {
-            if ($body && isset($body['message'])) {
-                $message = $body['message'];
-            } else {
-                $message = $response->getReasonPhrase();
-            }
-            throw new \Exception($message, $statusCode);
-        } elseif (
-            $statusCode == 404 ||
+        if (
             !$body ||
             ($body && !isset($body[$this->getCollectionKey()]))
         ) {
@@ -293,11 +346,11 @@ abstract class AbstractList extends Object implements \Iterator
     /**
      * Получить набор данных от API.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function getData()
     {
-        $responses = $this->get();
+        $responses = $this->getResponses();
         $collectionKey = $this->getCollectionKey();
         $metaKey = $this->getMetaKey();
         $requests = $this->getRequests();

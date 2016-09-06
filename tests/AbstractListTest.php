@@ -169,4 +169,34 @@ class AbstractListTest extends BaseCase
             $this->assertEquals(44752, $item->meta['totalCount']);
         }
     }
+
+    /**
+     * @expectedException \SimaLand\API\Exception
+     */
+    public function testExceptionRepeat()
+    {
+        $this->setGuzzleHttpResponse(new Response(500, [], 'Internal Server Error'));
+        $this->setGuzzleHttpResponse(new Response(500, [], 'Internal Server Error'));
+        $abstractObject = $this->getAbstractObject();
+        $abstractObject->countThreads = 1;
+        $abstractObject->repeatTimeout = 1;
+        $abstractObject->repeatCount = 1;
+        $abstractObject->next();
+    }
+
+    public function testRepeat()
+    {
+        $this->setGuzzleHttpResponse(new Response(500, [], 'Internal Server Error'));
+        $this->setResponse($this->category);
+        $this->setResponse($this->category);
+        $this->setResponse($this->category);
+
+        $abstractObject = $this->getAbstractObject();
+        $abstractObject->countThreads = 2;
+        $abstractObject->repeatTimeout = 1;
+        $abstractObject->repeatCount = 1;
+        $abstractObject->next();
+        $current = $abstractObject->current();
+        $this->assertInstanceOf('\SimaLand\API\Record', $current);
+    }
 }
