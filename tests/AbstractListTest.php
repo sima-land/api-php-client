@@ -171,7 +171,7 @@ class AbstractListTest extends BaseCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \SimaLand\API\Exception
      */
     public function testExceptionRepeat()
     {

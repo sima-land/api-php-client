@@ -5,6 +5,7 @@ namespace SimaLand\API;
 use GuzzleHttp\Psr7\Response;
 use SimaLand\API\Rest\Client;
 use SimaLand\API\Rest\Request;
+use SimaLand\API\Rest\ResponseException;
 
 /**
  * Абстрактный класс для загрузки данных сущности.
@@ -281,19 +282,16 @@ abstract class AbstractList extends Object implements \Iterator
      * Обработка ответов от API.
      *
      * @param Response[] $responses
-     * @return \Exception|null
+     * @throws ResponseException
      */
     private function processingResponses(array $responses)
     {
         foreach ($responses as $response) {
             $statusCode = $response->getStatusCode();
             if (($statusCode < 200 || $statusCode >= 300) && $statusCode != 404) {
-                $body = json_decode($response->getBody(), true);
-                $message = isset($body['message']) ? $body['message'] : $response->getReasonPhrase();
-                return new \Exception($message, $statusCode);
+                throw new ResponseException($response);
             }
         }
-        return null;
     }
 
     /**
@@ -307,19 +305,22 @@ abstract class AbstractList extends Object implements \Iterator
         $i = 0;
         $responses = [];
         do {
+            $e = null;
             if ($i > 0) {
                 sleep($this->repeatTimeout);
             }
             try {
                 $responses = $this->get();
-                $e = $this->processingResponses($responses);
+                $this->processingResponses($responses);
             } catch (\GuzzleHttp\Exception\RequestException $e) {
-                // Игнорируем ошибку ответа сервера.
+                // Игнорируем ошибку запроса к ресурсу.
+            } catch (\SimaLand\API\Exception $e) {
+                // Игнорируем ошибку ответа ресурса.
             }
             $i++;
         } while ($i <= $this->repeatCount && !is_null($e));
         if ($e) {
-            throw new \Exception($e->getMessage(), $e->getCode(), $e);
+            throw new Exception($e->getMessage(), $e->getCode(), $e);
         }
         return $responses;
     }
@@ -329,7 +330,6 @@ abstract class AbstractList extends Object implements \Iterator
      *
      * @param Response $response
      * @return bool
-     * @throws \Exception
      */
     private function getBody(Response $response)
     {
@@ -346,7 +346,7 @@ abstract class AbstractList extends Object implements \Iterator
     /**
      * Получить набор данных от API.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function getData()
     {
