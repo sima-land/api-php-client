@@ -278,7 +278,26 @@ abstract class AbstractList extends Object implements \Iterator
     }
 
     /**
-     * Получение и обработка ответов от API
+     * Обработка ответов от API.
+     *
+     * @param Response[] $responses
+     * @return \Exception|null
+     */
+    private function processingResponses(array $responses)
+    {
+        foreach ($responses as $response) {
+            $statusCode = $response->getStatusCode();
+            if (($statusCode < 200 || $statusCode >= 300) && $statusCode != 404) {
+                $body = json_decode($response->getBody(), true);
+                $message = isset($body['message']) ? $body['message'] : $response->getReasonPhrase();
+                return new \Exception($message, $statusCode);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Получение ответов от API
      *
      * @return \GuzzleHttp\Psr7\Response[]
      * @throws \Exception
@@ -286,27 +305,19 @@ abstract class AbstractList extends Object implements \Iterator
     private function getResponses()
     {
         $i = 0;
+        $responses = [];
         do {
             if ($i > 0) {
                 sleep($this->repeatTimeout);
             }
             try {
                 $responses = $this->get();
-                foreach ($responses as $response) {
-                    $statusCode = $response->getStatusCode();
-                    if (($statusCode < 200 || $statusCode >= 300) && $statusCode != 404) {
-                        $body = json_decode($response->getBody(), true);
-                        $message = isset($body['message']) ? $body['message'] : $response->getReasonPhrase();
-                        throw new \Exception($message, $statusCode);
-                    }
-                }
-                $e = null;
-                break;
-            } catch (\Exception $e) {
-                $e = new \Exception($e->getMessage(), $e->getCode(), $e);
+                $e = $this->processingResponses($responses);
+            } catch (\GuzzleHttp\Exception\RequestException $e) {
+                // Игнорируем ошибку ответа сервера.
             }
             $i++;
-        } while ($i <= $this->repeatCount);
+        } while ($i <= $this->repeatCount && !is_null($e));
         if ($e) {
             throw new \Exception($e->getMessage(), $e->getCode(), $e);
         }
