@@ -35,6 +35,28 @@ abstract class AbstractList extends Object implements \Iterator
     public $keyAlternativePagination = 'id-greater-than';
 
     /**
+     * GET параметры запроса.
+     *
+     * @var array
+     */
+    public $getParams = [];
+
+    /**
+     * Кол-во повторов обращение к ресурсу при ошибках.
+     *
+     * @var int
+     */
+    public $repeatTimeout = 30;
+
+    /**
+     * Время в секундак до следующего обращения к ресурсу.
+     *
+     * @var int
+     */
+    public $repeatCount = 30;
+
+
+    /**
      * SimaLand кдиент для запросов.
      *
      * @var \SimaLand\API\Rest\Client
@@ -54,13 +76,6 @@ abstract class AbstractList extends Object implements \Iterator
      * @var array
      */
     private $values = [];
-
-    /**
-     * GET параметры запроса.
-     *
-     * @var array
-     */
-    public $getParams = [];
 
     /**
      * Ключ текущей записи.
@@ -263,6 +278,42 @@ abstract class AbstractList extends Object implements \Iterator
     }
 
     /**
+     * Получение и обработка ответов от API
+     *
+     * @return \GuzzleHttp\Psr7\Response[]
+     * @throws \Exception
+     */
+    private function getResponses()
+    {
+        $i = 0;
+        do {
+            if ($i > 0) {
+                sleep($this->repeatTimeout);
+            }
+            try {
+                $responses = $this->get();
+                foreach ($responses as $response) {
+                    $statusCode = $response->getStatusCode();
+                    if (($statusCode < 200 || $statusCode >= 300) && $statusCode != 404) {
+                        $body = json_decode($response->getBody(), true);
+                        $message = isset($body['message']) ? $body['message'] : $response->getReasonPhrase();
+                        throw new \Exception($message, $statusCode);
+                    }
+                }
+                $e = null;
+                break;
+            } catch (\Exception $e) {
+                $e = new \Exception($e->getMessage(), $e->getCode(), $e);
+            }
+            $i++;
+        } while ($i <= $this->repeatCount);
+        if ($e) {
+            throw new \Exception($e->getMessage(), $e->getCode(), $e);
+        }
+        return $responses;
+    }
+
+    /**
      * Получить тело ответа от API.
      *
      * @param Response $response
@@ -272,16 +323,7 @@ abstract class AbstractList extends Object implements \Iterator
     private function getBody(Response $response)
     {
         $body = json_decode($response->getBody(), true);
-        $statusCode = $response->getStatusCode();
-        if (($statusCode < 200 || $statusCode >= 300) && $statusCode != 404) {
-            if ($body && isset($body['message'])) {
-                $message = $body['message'];
-            } else {
-                $message = $response->getReasonPhrase();
-            }
-            throw new \Exception($message, $statusCode);
-        } elseif (
-            $statusCode == 404 ||
+        if (
             !$body ||
             ($body && !isset($body[$this->getCollectionKey()]))
         ) {
@@ -297,7 +339,7 @@ abstract class AbstractList extends Object implements \Iterator
      */
     private function getData()
     {
-        $responses = $this->get();
+        $responses = $this->getResponses();
         $collectionKey = $this->getCollectionKey();
         $metaKey = $this->getMetaKey();
         $requests = $this->getRequests();

@@ -74,6 +74,7 @@ class ItemListTest extends BaseCase
         $this->setGuzzleHttpResponse(new Response(500, [], 'Invalid params'));
         $items = new ItemList($this->getClient());
         $items->countThreads = 1;
+        $items->repeatCount = 0;
         $items->rewind();
     }
 
@@ -86,6 +87,7 @@ class ItemListTest extends BaseCase
         $this->setResponse(['message' => 'Invalid params'], 500);
         $items = new ItemList($this->getClient());
         $items->countThreads = 1;
+        $items->repeatCount = 0;
         $items->rewind();
     }
 }

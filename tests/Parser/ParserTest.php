@@ -90,6 +90,7 @@ class ParserTest extends BaseCase
 
         $itemList = new ItemList($client);
         $itemList->countThreads = 1;
+        $itemList->repeatCount = 0;
         $itemStorage = new Csv(['filename' => $actualItem]);
 
         $parser = new Parser([
@@ -108,6 +109,7 @@ class ParserTest extends BaseCase
 
         $itemList = new ItemList($client);
         $itemList->countThreads = 1;
+        $itemList->repeatCount = 0;
         $itemStorage = new Csv(['filename' => $actualItem]);
 
         $parser = new Parser(['metaFilename' => $this->getMetaFilename()]);
