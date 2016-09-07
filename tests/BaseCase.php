@@ -5,6 +5,9 @@ namespace SimaLand\API\Tests;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use Monolog\Handler\NullHandler;
+use Monolog\Logger;
+use SimaLand\API\Object;
 use SimaLand\API\Rest\Client;
 
 class BaseCase extends \PHPUnit_Framework_TestCase
@@ -14,6 +17,16 @@ class BaseCase extends \PHPUnit_Framework_TestCase
 
     /** @var \GuzzleHttp\Handler\MockHandler */
     private $mockGuzzleHandler;
+
+    /**
+     * @return Logger
+     */
+    public function getLogger()
+    {
+        $logger = new Logger(Object::LOGGER_NAME);
+        $logger->pushHandler(new NullHandler());
+        return $logger;
+    }
 
     /**
      * @return \GuzzleHttp\Handler\MockHandler
@@ -57,7 +70,8 @@ class BaseCase extends \PHPUnit_Framework_TestCase
             $this->client = new Client([
                 'login' => 'test',
                 'password' => 'password',
-                'tokenPath' => TEST_DIR . 'data'
+                'tokenPath' => TEST_DIR . 'data',
+                'logger' => $this->getLogger(),
             ]);
             $this->client->setHttpClient($guzzleClient);
         }

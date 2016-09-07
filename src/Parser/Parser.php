@@ -101,6 +101,7 @@ class Parser extends Object
      */
     public function run($continue = true)
     {
+        $logger = $this->getLogger();
         $this->loadMetaData();
         foreach ($this->list as $el) {
             /** @var AbstractList $entity */
@@ -114,12 +115,14 @@ class Parser extends Object
             }
             /** @var StorageInterface $storage */
             $storage = $el['storage'];
+            $logger->info("Parse \"{$entityName}\"");
             foreach ($entity as $key => $record) {
                 if ($continue) {
                     $this->fillAndSaveMetaData($entity, $record, $key);
                 }
                 $storage->save($record);
             }
+            $logger->info("Finish parse \"{$entityName}\"");
             if ($continue) {
                 $this->finishParseEntity($entity);
                 $this->saveMetaData();

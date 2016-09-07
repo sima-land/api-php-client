@@ -3,6 +3,7 @@
 namespace SimaLand\API\Tests;
 
 use GuzzleHttp\Psr7\Response;
+use SimaLand\API\Exception;
 use SimaLand\API\Rest\Request;
 
 class AbstractListTest extends BaseCase
@@ -27,7 +28,7 @@ class AbstractListTest extends BaseCase
     {
         $class = 'SimaLand\API\AbstractList';
         $mock = $this->getMockBuilder($class)
-            ->setConstructorArgs(['client' => $this->getClient()])
+            ->setConstructorArgs(['client' => $this->getClient(), ['logger' => $this->getLogger()]])
             ->getMockForAbstractClass();
         $mock->expects($this->any())
             ->method('getEntity')
@@ -198,5 +199,19 @@ class AbstractListTest extends BaseCase
         $abstractObject->next();
         $current = $abstractObject->current();
         $this->assertInstanceOf('\SimaLand\API\Record', $current);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testListException()
+    {
+        $this->setGuzzleHttpResponse(function () {
+            throw new Exception('Test exception');
+        });
+        $abstractObject = $this->getAbstractObject();
+        $abstractObject->countThreads = 1;
+        $abstractObject->repeatCount = 1;
+        $abstractObject->next();
     }
 }

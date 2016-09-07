@@ -117,6 +117,12 @@ class Client extends Object
                 throw new \Exception('Request must be implement "\SimaLand\API\Rest\Request"');
             }
             $url = $this->createUrl($request->entity);
+            $this->getLogger()->info(
+                "Send request {$url}",
+                [
+                    'getParams' => $request->getParams,
+                ]
+            );
             $promises[$name] = $client->requestAsync(
                 $request->method,
                 $url,
