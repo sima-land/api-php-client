@@ -310,6 +310,8 @@ abstract class AbstractList extends Object implements \Iterator
             if ($i > 0) {
                 $logger->info("Wait time {$this->repeatTimeout} second to the next request");
                 sleep($this->repeatTimeout);
+                $attempt = $i + 1;
+                $logger->info("Attempt {$attempt} of {$this->repeatCount}");
             }
             try {
                 $responses = $this->get();
