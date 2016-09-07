@@ -10,7 +10,7 @@ class ItemListTest extends BaseCase
 {
     public function testAssignPage()
     {
-        $itemList = new ItemList($this->getClient());
+        $itemList = new ItemList($this->getClient(), ['logger' => $this->getLogger()]);
         $request = new \SimaLand\API\Rest\Request();
 
         $itemList->assignPage($request);
@@ -30,7 +30,7 @@ class ItemListTest extends BaseCase
 
     public function testAssignThreadNumber()
     {
-        $itemList = new ItemList($this->getClient());
+        $itemList = new ItemList($this->getClient(), ['logger' => $this->getLogger()]);
         $itemList->countThreads = 5;
         $request = new \SimaLand\API\Rest\Request();
         $itemList->assignThreadsNumber($request, 0);
@@ -55,7 +55,7 @@ class ItemListTest extends BaseCase
             $this->setResponse($itemData);
         }
 
-        $items = new ItemList($this->getClient());
+        $items = new ItemList($this->getClient(), ['logger' => $this->getLogger()]);
         $items->countThreads = 2;
         $items->keyThreads = 'id-mf';
         $result = [];
@@ -72,7 +72,7 @@ class ItemListTest extends BaseCase
     public function testException()
     {
         $this->setGuzzleHttpResponse(new Response(500, [], 'Invalid params'));
-        $items = new ItemList($this->getClient());
+        $items = new ItemList($this->getClient(), ['logger' => $this->getLogger()]);
         $items->countThreads = 1;
         $items->repeatCount = 0;
         $items->rewind();
@@ -85,7 +85,7 @@ class ItemListTest extends BaseCase
     public function testMessageException()
     {
         $this->setResponse(['message' => 'Invalid params'], 500);
-        $items = new ItemList($this->getClient());
+        $items = new ItemList($this->getClient(), ['logger' => $this->getLogger()]);
         $items->countThreads = 1;
         $items->repeatCount = 0;
         $items->rewind();

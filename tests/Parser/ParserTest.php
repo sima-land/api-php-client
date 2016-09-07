@@ -41,15 +41,15 @@ class ParserTest extends BaseCase
 
         $client = $this->getClient();
 
-        $itemList = new ItemList($client);
+        $itemList = new ItemList($client, ['logger' => $this->getLogger()]);
         $itemList->countThreads = 1;
         $itemStorage = new Csv(['filename' => TEST_DIR . 'output/item.csv']);
 
-        $categoryList = new CategoryList($client);
+        $categoryList = new CategoryList($client, ['logger' => $this->getLogger()]);
         $categoryList->countThreads = 1;
         $categoryStorage = new Csv(['filename' => TEST_DIR . 'output/category.csv']);
 
-        $parser = new Parser(['metaFilename' => $this->getMetaFilename()]);
+        $parser = new Parser(['metaFilename' => $this->getMetaFilename(), 'logger' => $this->getLogger()]);
         $parser->addEntity($itemList, $itemStorage);
         $parser->addEntity($categoryList, $categoryStorage);
         $parser->run();
@@ -88,7 +88,7 @@ class ParserTest extends BaseCase
 
         // эмулируем 500 ошибку на сервере и падение парсера
 
-        $itemList = new ItemList($client);
+        $itemList = new ItemList($client, ['logger' => $this->getLogger()]);
         $itemList->countThreads = 1;
         $itemList->repeatCount = 0;
         $itemStorage = new Csv(['filename' => $actualItem]);
@@ -96,6 +96,7 @@ class ParserTest extends BaseCase
         $parser = new Parser([
             'metaFilename' => $this->getMetaFilename(),
             'iterationCount' => 2,
+            'logger' => $this->getLogger(),
         ]);
         $parser->addEntity($itemList, $itemStorage);
 
@@ -107,12 +108,12 @@ class ParserTest extends BaseCase
 
         // возобновление парсинга после сбоя на сервере
 
-        $itemList = new ItemList($client);
+        $itemList = new ItemList($client, ['logger' => $this->getLogger()]);
         $itemList->countThreads = 1;
         $itemList->repeatCount = 0;
         $itemStorage = new Csv(['filename' => $actualItem]);
 
-        $parser = new Parser(['metaFilename' => $this->getMetaFilename()]);
+        $parser = new Parser(['metaFilename' => $this->getMetaFilename(), 'logger' => $this->getLogger()]);
         $parser->addEntity($itemList, $itemStorage);
         $parser->run();
         $this->assertEquals($this->getFileData($expectedItem), $this->getFileData($actualItem));
@@ -138,10 +139,10 @@ class ParserTest extends BaseCase
         $this->setGuzzleHttpResponse(new Response(404, [], 'Not Found'));
 
         $client = $this->getClient();
-        $categoryList = new CategoryList($client, ['countThreads' => 1]);
+        $categoryList = new CategoryList($client, ['countThreads' => 1, 'logger' => $this->getLogger()]);
         $categoryStorage = new Csv(['filename' => $actualFile]);
 
-        $parser = new Parser(['metaFilename' => $this->getMetaFilename()]);
+        $parser = new Parser(['metaFilename' => $this->getMetaFilename(), 'logger' => $this->getLogger()]);
         $parser->addEntity($categoryList, $categoryStorage);
         $parser->run();
 
@@ -164,10 +165,10 @@ class ParserTest extends BaseCase
         $this->setResponse($body);
 
         $client = $this->getClient();
-        $categoryList = new CategoryList($client, ['countThreads' => 1]);
+        $categoryList = new CategoryList($client, ['countThreads' => 1, 'logger' => $this->getLogger()]);
         $categoryStorage = new Csv(['filename' => $actualFile]);
 
-        $parser = new Parser(['metaFilename' => $this->getMetaFilename()]);
+        $parser = new Parser(['metaFilename' => $this->getMetaFilename(), 'logger' => $this->getLogger()]);
         $parser->addEntity($categoryList, $categoryStorage);
         $parser->run();
 
@@ -177,7 +178,7 @@ class ParserTest extends BaseCase
 
         // проверяем что повторый запуск парсинга не отрабатывает
 
-        $parser = new Parser(['metaFilename' => $this->getMetaFilename()]);
+        $parser = new Parser(['metaFilename' => $this->getMetaFilename(), 'logger' => $this->getLogger()]);
         $parser->addEntity($categoryList, $categoryStorage);
         $parser->run();
 

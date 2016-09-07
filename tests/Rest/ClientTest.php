@@ -80,7 +80,8 @@ class ClientTest extends BaseCase
         $client = new Client([
             'login' => 'test',
             'password' => 'password',
-            'tokenPath' => TEST_DIR . 'fake'
+            'tokenPath' => TEST_DIR . 'fake',
+            'logger' => $this->getLogger()
         ]);
         $client->get('user');
     }

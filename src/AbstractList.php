@@ -304,22 +304,30 @@ abstract class AbstractList extends Object implements \Iterator
     {
         $i = 0;
         $responses = [];
+        $logger = $this->getLogger();
         do {
             $e = null;
             if ($i > 0) {
+                $logger->info("Wait time {$this->repeatTimeout} second to the next request");
                 sleep($this->repeatTimeout);
             }
             try {
                 $responses = $this->get();
                 $this->processingResponses($responses);
-            } catch (\GuzzleHttp\Exception\RequestException $e) {
-                // Игнорируем ошибку запроса к ресурсу.
-            } catch (\SimaLand\API\Exception $e) {
-                // Игнорируем ошибку ответа ресурса.
+            } catch (\Exception $e) {
+                if (
+                    ($e instanceof \GuzzleHttp\Exception\RequestException) ||
+                    ($e instanceof \SimaLand\API\Rest\ResponseException)
+                ) {
+                    $logger->warning($e->getMessage(), ['code' => $e->getCode()]);
+                } else {
+                    throw $e;
+                }
             }
             $i++;
         } while ($i <= $this->repeatCount && !is_null($e));
         if ($e) {
+            $logger->error($e->getMessage(), ['code' => $e->getCode()]);
             throw new Exception($e->getMessage(), $e->getCode(), $e);
         }
         return $responses;
