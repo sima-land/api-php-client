@@ -55,10 +55,14 @@ $parser->run();
 
 Подробное описание компонентов парсера можете посмотреть здесь:
 
-* [Клиент api sima-land.ru](doc/CLIENT.md)
-* [Парсер](doc/PARSER.md)
-* [Логирование](doc/LOGGER.md)
+* [Клиент api sima-land.ru](doc/client.md)
+* [Парсер](doc/parser.md)
+* [Логирование](doc/logger.md)
 
+
+# Ограничение
+
+Существует лимит, 250 запросов к API за 10 секунд.
 
 ## Тесты
 
