@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/sima-land/api-php-client.svg?branch=master)](https://travis-ci.org/sima-land/api-php-client)
 [![StyleCI](https://styleci.io/repos/65816741/shield)](https://styleci.io/repos/65816741)
+[![Code Coverage](https://scrutinizer-ci.com/g/sima-land/api-php-client/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/sima-land/api-php-client/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sima-land/api-php-client/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sima-land/api-php-client/?branch=master)
 
 # api-php-client
 
@@ -28,79 +30,9 @@ composer require "sima-land/api-php-client": "~1"
 * Повторное опрашивание ресурса при возникновении ошибки
 * Логирование
 
-## API клиент
+## Пример парсинга
 
-Клиент позволяет делать произвольные запросы к API sima-land.ru, формирует все необходимые для этого заголовки.
-Умеет делать одновременно несколько асинхронных запросов.
-
-### Авторизация
-
-Авторизация идет по [JWT токену](https://tools.ietf.org/html/rfc7519).
-При первом запросе к ресурсу, идет авторизация по логину и паролю для получения токена.
-Токен временно сохраняется  в файле. Путь до файла вы можете задать свой, передав в конструктор клиента `\SimaLand\API\Rest\Client` переменную `tokenPath`.
-Время жизни токена 7 суток.
-
-### Запрос к API
-
-```php
-$client = new \SimaLand\API\Rest\Client([
-    'login' => 'login',
-    'password' => 'password'
-]);
-$response = $client->get('category', ['page' => 5]);
-$body = json_decode($response->getBody(), true);
-foreach ($body['items'] as $item) {
-    // you code
-}
-```
-
-### Асинхронные запросы к API
-
-```php
-$client = new \SimaLand\API\Rest\Client([
-    'login' => 'login',
-    'password' => 'password'
-]);
-$requestPage1 = new \SimaLand\API\Rest\Request([
-    'entity' => $this->getEntity()
-]);
-$requestPage2 = new \SimaLand\API\Rest\Request([
-    'entity' => $this->getEntity()
-    'getParams' => ['page' => 2]
-]);
-$responses = $client->batchQuery([$requestPage1, $requestPage2]);
-foreach ($responses as $response) {
-    if ($responses->getStatusCode() == 200) {
-        $body = json_decode($response->getBody(), true);
-        foreach ($body['items'] as $item) {
-            // you code
-        }
-    } else {
-        throw new \Exception($response->getReasonPhrase(), $responses->getStatusCode());
-    }
-}
-```
-
-## Ограничение
-
-Существует лимит, 250 запросов к API за 10 секунд.
-
-## Парсер
-
-Парсер позволит загрузить все данные и сохранить их в указанное место.
-Может делать одновременно несколько асинхронных запросов к API, что сократит время ожидания постраничной загрузки.
-
-Для возобновления работы парсера, если что-то пошло не так, в конструктор нужно передать параметер `metaFilename`. Который
-представляет собой полный путь до файла.
-
-Если вы хотите заново загрузить данные, достаточно вызвать метод `reset()` перед методом `run()`.
-В случае вызова `run(false)` парсер проигнорирует текущую позицию.
-
-Объект хранилища должен реализовать интерфейс `\SimaLand\API\Parser\StorageInterface`
-
-### Пример использования парсера
-
-Выкачивание данных каталога
+В данном примере парсинг получит все категории и товары.
 
 ```php
 $client = new \SimaLand\API\Rest\Client([
@@ -110,49 +42,29 @@ $client = new \SimaLand\API\Rest\Client([
 
 $parser = new \SimaLand\API\Parser\Parser(['metaFilename' => 'path/to/file']);
 
-// добавляем список товаров
-$itemStorage = new \SimaLand\API\Parser\Csv(['filename' => 'path/to/item.csv']);
-$itemList = new \SimaLand\API\Entities\ItemList($client);
-$parser->addEntity($itemList, $itemStorage);
-
 // добавляем список категорий
 $categoryStorage = new \SimaLand\API\Parser\Csv(['filename' => 'path/to/category.csv']);
 $categoryList = new \SimaLand\API\Entities\CategoryList($client);
 $parser->addEntity($categoryList, $categoryStorage);
 
+// добавляем список товаров
+$itemStorage = new \SimaLand\API\Parser\Csv(['filename' => 'path/to/item.csv']);
+$itemList = new \SimaLand\API\Entities\ItemList($client);
+$parser->addEntity($itemList, $itemStorage);
+
 $parser->run();
 ```
 
-Возобновление после сбоя (сетевые проблемы, ошибки сервера и т.п.)
+Подробное описание компонентов парсера можете посмотреть здесь:
 
-```php
-// забываем текущую позицию и начинаем парсинг заново
-$parser->reset();
-$parser->run();
+* [Клиент api sima-land.ru](doc/client.md)
+* [Парсер](doc/parser.md)
+* [Логирование](doc/logger.md)
 
-// игнорируем текущую позицию и начинаем парсинг заново
-$parser->run(false);
-```
 
-## Логирование
+# Ограничение
 
-Каждый компонент логирует свои действия.
-По умолчанию используется стандартный логгер который выводит лог в `php://output`.
-Этот логгер вы можете переопределить, он должен реализовать интерфейс `\Psr\Log\LoggerInterface`.
-
-```php
-$logger = new \Monolog\Logger(Object::LOGGER_NAME, [new \Monolog\Handler\NullHandler()]);
-
-$client = new \SimaLand\API\Rest\Client([
-    'login' => 'login',
-    'password' => 'password',
-    'logger' => $logger,
-]);
-
-// или
-
-$client->setLogger($logger);
-```
+Существует лимит, 250 запросов к API за 10 секунд.
 
 ## Тесты
 

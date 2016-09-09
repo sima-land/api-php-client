@@ -56,7 +56,7 @@ class Client extends Object
     private $options = [
         'http_errors' => false,
         'headers' => [
-            'User-Agent' => 'Sima-land api-php-client/1.0',
+            'User-Agent' => 'Sima-land api-php-client/1.1',
             'Content-Type' => 'application/json',
         ],
     ];
