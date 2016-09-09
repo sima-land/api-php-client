@@ -29,17 +29,18 @@ class ClientTest extends BaseCase
             'getParams' => ['foo' => 'bar'],
             'postParams' => ['bar' => 'foo'],
         ]);
+        $options = $client->getOptions($request);
+        unset($options['headers']['User-Agent']);
         $this->assertEquals(
             [
                 'http_errors' => false,
                 'headers' => [
-                    'User-Agent' => 'Sima-land api-php-client/1.0',
                     'Content-Type' => 'application/json',
                     'Authorization' => 'Bearer token',
                 ],
                 'query' => ['foo' => 'bar'],
             ],
-            $client->getOptions($request)
+            $options
         );
     }
 
