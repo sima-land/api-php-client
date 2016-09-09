@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/sima-land/api-php-client.svg?branch=master)](https://travis-ci.org/sima-land/api-php-client)
 [![StyleCI](https://styleci.io/repos/65816741/shield)](https://styleci.io/repos/65816741)
+[![Code Coverage](https://scrutinizer-ci.com/g/sima-land/api-php-client/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/sima-land/api-php-client/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sima-land/api-php-client/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sima-land/api-php-client/?branch=master)
 
 # api-php-client
 
