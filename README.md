@@ -9,8 +9,10 @@
 
 ## Требования
 
+* OS Linux или MacOS
 * [PHP 5.5 или новее](http://www.php.net/)
 * [composer](https://getcomposer.org/download/)
+* curl 
 
 ## Установка
 
