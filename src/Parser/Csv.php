@@ -79,9 +79,9 @@ class Csv extends Object implements StorageInterface
     {
         $this->open();
         $item = $record->data;
-        foreach ($item as $keys => $value) {
+        foreach ($item as &$value) {
             if (is_array($value)) {
-                unset($item[$keys]);
+                $value = json_encode($value, JSON_UNESCAPED_UNICODE);
             }
         }
         if (!$this->isSaveHeader) {

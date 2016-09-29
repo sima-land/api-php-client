@@ -8,10 +8,7 @@ return [
             'name' => 'Картина 25*20 см с изображением природы 5569  64V-5569',
             'slug' => 'kartina-2520-sm-s-izobrazheniem-prirody-5569-64v-5569',
             'balance' => 0,
-            'country' => [
-                'id' => 1,
-                'Москва'
-            ],
+            'country' => [],
         ],
         [
             'id' => 785,
