@@ -5,7 +5,7 @@ require_once "vendor/autoload.php";
 // Путь до директории с файлами.
 $pathData = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR;
 
-// Если нет директории создаем ее.
+// Если нет директории, создаем ее.
 if (!file_exists($pathData)) {
     mkdir($pathData);
     chmod($pathData, 0777);
@@ -26,24 +26,24 @@ $client = new \SimaLand\API\Rest\Client([
 ]);
 
 // Добавляем для работы клиента HTTP клиент.
-// HTTP клиент должен реализовать интерфейс \GuzzleHttp\ClientInterface
+// HTTP клиент должен реализовать интерфейс \GuzzleHttp\ClientInterface.
 $httpClient = new \GuzzleHttp\Client();
 $client->setHttpClient($httpClient);
 
 // Создаем объект логгер. Для логирование работы парсера.
-// Логгер должен реализовать интерфейс \Psr\Log\LoggerInterface
-// По умолчанию весь лог отправляется в php://output
+// Логгер должен реализовать интерфейс \Psr\Log\LoggerInterface.
+// По умолчанию весь лог отправляется в php://output.
 $logger = new \Monolog\Logger('SimaParser');
 $logger->pushHandler(new \Monolog\Handler\StreamHandler($pathData . "parser.log"));
 // Логгер можно добавить с помощью метода setLogger
-// или передать параметром в конструктор api клиента new Client(['logger' => $logger])
+// или передать параметром в конструктор API клиента new Client(['logger' => $logger]).
 $client->setLogger($logger);
 
 // Создаем объекты сущностей и место хронения данных.
 
 // Категории.
 // Передадим логгер этому объекту в конструкторе.
-// Парсер может одновременно обращаться к api в несколько потоков.
+// Парсер может одновременно обращаться к API в несколько потоков.
 // Существует лимит, 250 запросов к API за 10 секунд.
 $categoryList = new \SimaLand\API\Entities\CategoryList(
     $client,
@@ -54,15 +54,15 @@ $categoryList = new \SimaLand\API\Entities\CategoryList(
 
         // Установим 10 потоков. По умолчанию парсер работает в 5 потоков.
         'countThreads' => 10,
-        // Ключ, который отвечает за номер потока. По дефолту "page"
-        // За исключением сушности "Товар", там ключ будет "id-mf"
+        // Ключ, который отвечает за номер потока. По дефолту "page".
+        // За исключением сушности "Товар", там ключ будет "id-mf".
         'keyThreads' => 'page',
-        // Можем добавить GET параметры к запросу API
-        // Например будем получать категории, включая категории 18+
+        // Можем добавить GET параметры к запросу API.
+        // Например, будем получать категории, включая категории 18+.
         'getParams' => [
             'with_adult' => 1,
         ],
-        // Кол-во повторов обращение к ресурсу при ошибках.
+        // Количество повторов обращения к ресурсу при ошибках.
         // По умолчанию 30.
         'repeatTimeout' => 20,
         // Время в секундах до следующего обращения к ресурсу.
@@ -71,7 +71,7 @@ $categoryList = new \SimaLand\API\Entities\CategoryList(
     ]
 );
 
-// Так же GET параметры могут быть добавлены методом addGetParams()
+// Кроме того GET параметры могут быть добавлены методом addGetParams().
 $categoryList->addGetParams([
     // Запросим все активные категории (содержащие активные товары либо в себе, либо в своих потомках).
     "is_not_empty" => 1
@@ -89,7 +89,7 @@ foreach ($responses as $response) {
         // Метод getMetaKey() Вернет ключ по которому находятся мата данные запроса.
         $metaKey = $categoryList->getMetaKey();
         foreach ($body[$collectionKey] as $item) {
-            // Ваш код
+            // Ваш код.
         }
     } else {
         throw new \Exception($response->getReasonPhrase(), $responses->getStatusCode());
@@ -98,15 +98,15 @@ foreach ($responses as $response) {
 
 // Каждая сущность реализует интерфейс \Iterator. Соответственно можно получить все данные сущности следующим образом.
 foreach ($categoryList as $record) {
-    // $record объект класса \SimaLand\API\Record
+    // $record объект класса \SimaLand\API\Record.
     // Здесь вы можете реализовать сохранение данных.
 }
 */
 
-// Хранения данных атрибутов
-// Так же вы можете реализовать свой класс хранения данных, который будет сохранять в MySQL, PostgresQL и т. п..
-// Этот класс должен реализовать интерфейс \SimaLand\API\Parser\StorageInterface
-// Сейчас мы данные этой сущности сохраним в csv файл
+// Хранение данных атрибутов
+// Вы можете реализовать свой класс хранения данных, который будет сохранять в MySQL, PostgresQL и т. п..
+// Этот класс должен реализовать интерфейс \SimaLand\API\Parser\StorageInterface.
+// Сейчас мы данные этой сущности сохраним в csv файл.
 $categoryStorage = new \SimaLand\API\Parser\Csv([
     'filename' => $pathData . 'category.csv',
 
@@ -151,7 +151,7 @@ $itemList = new \SimaLand\API\Entities\ItemList(
     $client,
     [
         'logger' => $logger,
-        // Получим все товары, включая 18+
+        // Получим все товары, включая 18+.
         'getParams' => [
             'with_adult' => 1
         ],
@@ -165,7 +165,7 @@ $attrItemStorage = new \SimaLand\API\Parser\Csv(['filename' => $pathData . 'attr
 
 // Загрузка и сохранение всех записей сущностей.
 $parser = new \SimaLand\API\Parser\Parser([
-    // Путь до файла с мета данными. Он необходим, для продолжения парсинга, если по какой-то причине парсер остановил свою работы.
+    // Путь до файла с мета данными. Он необходим для продолжения парсинга, если по какой-то причине парсер остановил свою работы.
     'metaFilename' => $pathData . 'parser_meta',
 
     // Необязательные свойства.
@@ -177,9 +177,9 @@ $parser = new \SimaLand\API\Parser\Parser([
 ]);
 
 // Добавим в парсер сущности.
-// Метод addEntity() принимает два параметра лист и хранилище.
-// Лист должен наследоваться от класса \SimaLand\API\AbstractList
-// Хранилище должно реализовывать интерфейс \SimaLand\API\Parser\StorageInterface
+// Метод addEntity() принимает два параметра: лист и хранилище.
+// Лист должен наследоваться от класса \SimaLand\API\AbstractList.
+// Хранилище должно реализовывать интерфейс \SimaLand\API\Parser\StorageInterface.
 $parser->addEntity($categoryList, $categoryStorage);
 $parser->addEntity($attrList, $attrStorage);
 $parser->addEntity($optionList, $optionStorage);
@@ -195,7 +195,7 @@ $parser->addEntity($attrItemList, $attrItemStorage);
 // Этот метод удалит мета данные, чтоб начать парсинг с самого начала.
 // $parser->reset();
 
-// Или вы можете запустить парсинг с параметром false. В этом случаи мета данные будут игнорироваться.
+// Вы можете запустить парсинг с параметром false. В этом случаи мета данные будут игнорироваться.
 // $parser->run(false);
 
 // Запускаем процесс парсинга.
