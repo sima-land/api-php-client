@@ -5,7 +5,7 @@ namespace SimaLand\API\Tests\Parser;
 use GuzzleHttp\Psr7\Response;
 use SimaLand\API\Entities\CategoryList;
 use SimaLand\API\Entities\ItemList;
-use SimaLand\API\Parser\Csv;
+use SimaLand\API\Parser\Json;
 use SimaLand\API\Parser\Parser;
 use SimaLand\API\Tests\BaseCase;
 
@@ -31,10 +31,10 @@ class ParserTest extends BaseCase
         $this->setGuzzleHttpResponse(new Response(404, [], 'Not Found'));
         $this->setResponse(require(TEST_DIR . "/data/category.php"));
         $this->setGuzzleHttpResponse(new Response(404, [], 'Not Found'));
-        $expectedItem = TEST_DIR . 'data/item.csv';
-        $expectedCategory = TEST_DIR . 'data/category.csv';
-        $actualItem = TEST_DIR . 'output/item.csv';
-        $actualCategory = TEST_DIR . 'output/category.csv';
+        $expectedItem = TEST_DIR . 'data/item.txt';
+        $expectedCategory = TEST_DIR . 'data/category.txt';
+        $actualItem = TEST_DIR . 'output/item.txt';
+        $actualCategory = TEST_DIR . 'output/category.txt';
         @unlink($actualItem);
         @unlink($actualCategory);
         @unlink($this->getMetaFilename());
@@ -43,11 +43,11 @@ class ParserTest extends BaseCase
 
         $itemList = new ItemList($client, ['logger' => $this->getLogger()]);
         $itemList->countThreads = 1;
-        $itemStorage = new Csv(['filename' => TEST_DIR . 'output/item.csv']);
+        $itemStorage = new Json(['filename' => TEST_DIR . 'output/item.txt']);
 
         $categoryList = new CategoryList($client, ['logger' => $this->getLogger()]);
         $categoryList->countThreads = 1;
-        $categoryStorage = new Csv(['filename' => TEST_DIR . 'output/category.csv']);
+        $categoryStorage = new Json(['filename' => TEST_DIR . 'output/category.txt']);
 
         $parser = new Parser(['metaFilename' => $this->getMetaFilename(), 'logger' => $this->getLogger()]);
         $parser->addEntity($itemList, $itemStorage);
@@ -63,8 +63,8 @@ class ParserTest extends BaseCase
 
     public function testRestoreParse()
     {
-        $expectedItem = TEST_DIR . 'data/item.csv';
-        $actualItem = TEST_DIR . 'output/item.csv';
+        $expectedItem = TEST_DIR . 'data/item.txt';
+        $actualItem = TEST_DIR . 'output/item.txt';
         @unlink($actualItem);
         @unlink($this->getMetaFilename());
 
@@ -91,7 +91,7 @@ class ParserTest extends BaseCase
         $itemList = new ItemList($client, ['logger' => $this->getLogger()]);
         $itemList->countThreads = 1;
         $itemList->repeatCount = 0;
-        $itemStorage = new Csv(['filename' => $actualItem]);
+        $itemStorage = new Json(['filename' => $actualItem]);
 
         $parser = new Parser([
             'metaFilename' => $this->getMetaFilename(),
@@ -111,7 +111,7 @@ class ParserTest extends BaseCase
         $itemList = new ItemList($client, ['logger' => $this->getLogger()]);
         $itemList->countThreads = 1;
         $itemList->repeatCount = 0;
-        $itemStorage = new Csv(['filename' => $actualItem]);
+        $itemStorage = new Json(['filename' => $actualItem]);
 
         $parser = new Parser(['metaFilename' => $this->getMetaFilename(), 'logger' => $this->getLogger()]);
         $parser->addEntity($itemList, $itemStorage);
@@ -131,7 +131,7 @@ class ParserTest extends BaseCase
     public function testSaveMetaPage()
     {
         @unlink($this->getMetaFilename());
-        $actualFile = TEST_DIR . 'output/category.csv';
+        $actualFile = TEST_DIR . 'output/category.txt';
         $body = require(TEST_DIR . "/data/category.php");
         $this->setResponse($body);
         $body['_meta']['currentPage'] = 2;
@@ -140,7 +140,7 @@ class ParserTest extends BaseCase
 
         $client = $this->getClient();
         $categoryList = new CategoryList($client, ['countThreads' => 1, 'logger' => $this->getLogger()]);
-        $categoryStorage = new Csv(['filename' => $actualFile]);
+        $categoryStorage = new Json(['filename' => $actualFile]);
 
         $parser = new Parser(['metaFilename' => $this->getMetaFilename(), 'logger' => $this->getLogger()]);
         $parser->addEntity($categoryList, $categoryStorage);
@@ -157,7 +157,7 @@ class ParserTest extends BaseCase
     public function testFinishParseEntity()
     {
         @unlink($this->getMetaFilename());
-        $actualFile = TEST_DIR . 'output/category.csv';
+        $actualFile = TEST_DIR . 'output/category.txt';
         $body = require(TEST_DIR . "/data/category.php");
         $body['items'] = [];
 
@@ -166,7 +166,7 @@ class ParserTest extends BaseCase
 
         $client = $this->getClient();
         $categoryList = new CategoryList($client, ['countThreads' => 1, 'logger' => $this->getLogger()]);
-        $categoryStorage = new Csv(['filename' => $actualFile]);
+        $categoryStorage = new Json(['filename' => $actualFile]);
 
         $parser = new Parser(['metaFilename' => $this->getMetaFilename(), 'logger' => $this->getLogger()]);
         $parser->addEntity($categoryList, $categoryStorage);
@@ -196,11 +196,11 @@ class ParserTest extends BaseCase
         $fh = fopen($filename, "r");
         $data = [];
         while (!feof($fh)) {
-            $line = fgetcsv($fh, null, ';');
+            $line = json_decode(fgetss($fh), true);
             if ($line) {
-                $key = $line[0];
-                if (isset($data[$line[0]])) {
-                    $key = $line[0] . "_" . uniqid();
+                $key = $line['id'];
+                if (isset($data[$line["id"]])) {
+                    $key = $line["id"] . "_" . uniqid();
                 }
                 $data[$key] = $line;
             }

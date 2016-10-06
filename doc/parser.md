@@ -24,12 +24,12 @@ $client = new \SimaLand\API\Rest\Client([
 $parser = new \SimaLand\API\Parser\Parser(['metaFilename' => 'path/to/file']);
 
 // добавляем список категорий
-$categoryStorage = new \SimaLand\API\Parser\Csv(['filename' => 'path/to/category.csv']);
+$categoryStorage = new \SimaLand\API\Parser\Json(['filename' => 'path/to/category.txt']);
 $categoryList = new \SimaLand\API\Entities\CategoryList($client);
 $parser->addEntity($categoryList, $categoryStorage);
 
 // добавляем список товаров
-$itemStorage = new \SimaLand\API\Parser\Csv(['filename' => 'path/to/item.csv']);
+$itemStorage = new \SimaLand\API\Parser\Json(['filename' => 'path/to/item.txt']);
 $itemList = new \SimaLand\API\Entities\ItemList($client);
 $parser->addEntity($itemList, $itemStorage);
 

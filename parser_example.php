@@ -3,7 +3,7 @@
 require_once "vendor/autoload.php";
 
 // Путь до директории с файлами.
-$pathData = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR;
+$pathData = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "data_json" . DIRECTORY_SEPARATOR;
 
 // Если нет директории, создаем ее.
 if (!file_exists($pathData)) {
@@ -106,45 +106,38 @@ foreach ($categoryList as $record) {
 // Хранение данных атрибутов
 // Вы можете реализовать свой класс хранения данных, который будет сохранять в MySQL, PostgresQL и т. п..
 // Этот класс должен реализовать интерфейс \SimaLand\API\Parser\StorageInterface.
-// Сейчас мы данные этой сущности сохраним в csv файл.
-$categoryStorage = new \SimaLand\API\Parser\Csv([
-    'filename' => $pathData . 'category.csv',
-
-    // необязательные свойства.
-
-    // Символ разделения полей.
-    'delimiter' => ";",
-    // Символ разделителя текста.
-    'enclosure' => '"',
+// Сейчас мы данные этой сущности сохраним в Json файл.
+$categoryStorage = new \SimaLand\API\Parser\Json([
+    'filename' => $pathData . 'category.txt'
 ]);
 
 // Атрибуты товаров.
 $attrList = new \SimaLand\API\Entities\AttrList($client, ['logger' => $logger]);
-$attrStorage = new \SimaLand\API\Parser\Csv(['filename' => $pathData . 'attr.csv']);
+$attrStorage = new \SimaLand\API\Parser\Json(['filename' => $pathData . 'attr.txt']);
 
 // Опция атрибута товара.
 $optionList = new \SimaLand\API\Entities\OptionList($client, ['logger' => $logger]);
-$optionStorage = new \SimaLand\API\Parser\Csv(['filename' => $pathData . 'option.csv']);
+$optionStorage = new \SimaLand\API\Parser\Json(['filename' => $pathData . 'option.txt']);
 
 // Тип значения атрибута товара.
 $dataTypeList = new \SimaLand\API\Entities\DatatypeList($client, ['logger' => $logger]);
-$dataTypeStorage = new \SimaLand\API\Parser\Csv(['filename' => $pathData . 'datatype.csv']);
+$dataTypeStorage = new \SimaLand\API\Parser\Json(['filename' => $pathData . 'datatype.txt']);
 
 // Материалы.
 $materialList = new \SimaLand\API\Entities\MaterialList($client, ['logger' => $logger]);
-$materialStorage = new \SimaLand\API\Parser\Csv(['filename' => $pathData . 'material.csv']);
+$materialStorage = new \SimaLand\API\Parser\Json(['filename' => $pathData . 'material.txt']);
 
 // Серии товаров.
 $seriesList = new \SimaLand\API\Entities\SeriesList($client, ['logger' => $logger]);
-$attrStorage = new \SimaLand\API\Parser\Csv(['filename' => $pathData . 'series.csv']);
+$attrStorage = new \SimaLand\API\Parser\Json(['filename' => $pathData . 'series.txt']);
 
 // Страны.
 $countryList = new \SimaLand\API\Entities\CountryList($client, ['logger' => $logger]);
-$countryStorage = new \SimaLand\API\Parser\Csv(['filename' => $pathData . 'country.csv']);
+$countryStorage = new \SimaLand\API\Parser\Json(['filename' => $pathData . 'country.txt']);
 
 // Торговые марки.
 $trademarkList = new \SimaLand\API\Entities\TrademarkList($client, ['logger' => $logger]);
-$trademarkStorage = new \SimaLand\API\Parser\Csv(['filename' => $pathData . 'trademark.csv']);
+$trademarkStorage = new \SimaLand\API\Parser\Json(['filename' => $pathData . 'trademark.txt']);
 
 // Товары.
 $itemList = new \SimaLand\API\Entities\ItemList(
@@ -157,11 +150,11 @@ $itemList = new \SimaLand\API\Entities\ItemList(
         ],
     ]
 );
-$itemStorage = new \SimaLand\API\Parser\Csv(['filename' => $pathData . 'item.csv']);
+$itemStorage = new \SimaLand\API\Parser\Json(['filename' => $pathData . 'item.txt']);
 
 // Связь атрибута с товаром.
 $attrItemList = new \SimaLand\API\Entities\AttrItemList($client, ['logger' => $logger]);
-$attrItemStorage = new \SimaLand\API\Parser\Csv(['filename' => $pathData . 'attr_item.csv']);
+$attrItemStorage = new \SimaLand\API\Parser\Json(['filename' => $pathData . 'attr_item.txt']);
 
 // Загрузка и сохранение всех записей сущностей.
 $parser = new \SimaLand\API\Parser\Parser([
