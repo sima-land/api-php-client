@@ -3,7 +3,7 @@
 require_once "vendor/autoload.php";
 
 // Путь до директории с файлами.
-$pathData = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "data_json" . DIRECTORY_SEPARATOR;
+$pathData = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR;
 
 // Если нет директории, создаем ее.
 if (!file_exists($pathData)) {
