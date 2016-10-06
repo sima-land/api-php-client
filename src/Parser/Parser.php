@@ -16,9 +16,9 @@ use SimaLand\API\Record;
  *     'password' => 'password'
  * ]);
  * $itemList = new \SimaLand\API\Entities\ItemList($client);
- * $itemStorage = new Csv(['filename' => 'path/to/item.csv']);
+ * $itemStorage = new Json(['filename' => 'path/to/item.txt']);
  * $categoryList = new \SimaLand\API\Entities\CategoryList($client);
- * $categoryStorage = new Csv(['filename' => 'path/to/category.csv']);
+ * $categoryStorage = new Json(['filename' => 'path/to/category.txt']);
  * $parser = new Parser(['metaFilename' => 'path/to/file']);
  * $parser->addEntity($itemList, $itemStorage);
  * $parser->addEntity($categoryList, $categoryStorage);
