@@ -38,21 +38,21 @@ class Parser extends Object
     /**
      * @var array
      */
-    private $list = [];
+    protected $list = [];
 
     /**
      * Путь до файла с мета данными.
      *
      * @var string
      */
-    private $metaFilename;
+    protected $metaFilename;
 
     /**
      * Мета данные.
      *
      * @var array
      */
-    private $metaData = [];
+    protected $metaData = [];
 
     /**
      * @inheritdoc
@@ -133,7 +133,7 @@ class Parser extends Object
     /**
      * Загрузить мета данные.
      */
-    private function loadMetaData()
+    protected function loadMetaData()
     {
         if (!file_exists($this->metaFilename)) {
             return;
@@ -149,7 +149,7 @@ class Parser extends Object
      * @param Record $record
      * @param int $i
      */
-    private function fillAndSaveMetaData(AbstractList $entity, Record $record, $i)
+    protected function fillAndSaveMetaData(AbstractList $entity, Record $record, $i)
     {
         $entityName = $entity->getEntity();
         $pageKey = $record->meta ? $entity->keyThreads : $entity->keyAlternativePagination;
@@ -180,7 +180,7 @@ class Parser extends Object
      *
      * @param AbstractList $entity
      */
-    private function finishParseEntity(AbstractList $entity)
+    protected function finishParseEntity(AbstractList $entity)
     {
         $entityName = $entity->getEntity();
         if (!isset($this->metaData[$entityName])) {
@@ -192,7 +192,7 @@ class Parser extends Object
     /**
      * Сохранить мета данные.
      */
-    private function saveMetaData()
+    protected function saveMetaData()
     {
         $data = json_encode($this->metaData);
         file_put_contents($this->metaFilename, $data);
