@@ -8,7 +8,8 @@ use SimaLand\API\Record;
 
 class ItemListTest extends BaseCase
 {
-    public function testSetGetParams() {
+    public function testSetGetParams()
+    {
         $itemList = new ItemList(
             $this->getClient(),
             [

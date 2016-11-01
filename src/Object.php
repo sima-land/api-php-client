@@ -61,7 +61,8 @@ class Object
      * @param string $key
      * @param mixed $value
      */
-    public function __set ($key, $value) {
+    public function __set($key, $value)
+    {
         $setter = 'set' . ucfirst($key);
         if (method_exists($this, $setter)) {
             call_user_func([$this, $setter], $value);
@@ -74,7 +75,8 @@ class Object
      * @param string $key
      * @return mixed
      */
-    public function __get ($key) {
+    public function __get($key)
+    {
         $getter = 'get' . ucfirst($key);
         if (method_exists($this, $getter)) {
             return call_user_func([$this, $getter]);

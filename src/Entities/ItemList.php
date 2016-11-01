@@ -64,7 +64,8 @@ class ItemList extends AbstractList
     /**
      * @inheritdoc
      */
-    public function setGetParams(array $value) {
+    public function setGetParams(array $value)
+    {
         if (!isset($value[$this->keyAlternativePagination])) {
             $value[$this->keyAlternativePagination] = 0;
         }

@@ -393,7 +393,8 @@ abstract class AbstractList extends Object implements \Iterator
      *
      * @param array $value
      */
-    public function setGetParams(array $value) {
+    public function setGetParams(array $value)
+    {
         $this->_getParams = $value;
     }
 
@@ -402,7 +403,8 @@ abstract class AbstractList extends Object implements \Iterator
      *
      * @return array
      */
-    public function getGetParams() {
+    public function getGetParams()
+    {
         return $this->_getParams;
     }
 }
