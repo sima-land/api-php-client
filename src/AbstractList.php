@@ -6,11 +6,14 @@ use GuzzleHttp\Psr7\Response;
 use SimaLand\API\Rest\Client;
 use SimaLand\API\Rest\Request;
 use SimaLand\API\Rest\ResponseException;
+use GuzzleHttp\Exception\RequestException;
 
 /**
  * Абстрактный класс для загрузки данных сущности.
  *
  * Класс реализует интерфейс Iterator.
+ *
+ * @property $getParams GET параметры запроса.
  */
 abstract class AbstractList extends Object implements \Iterator
 {
@@ -40,7 +43,7 @@ abstract class AbstractList extends Object implements \Iterator
      *
      * @var array
      */
-    public $getParams = [];
+    protected $_getParams = [];
 
     /**
      * Кол-во повторов обращение к ресурсу при ошибках.
@@ -117,7 +120,7 @@ abstract class AbstractList extends Object implements \Iterator
      */
     public function addGetParams(array $params)
     {
-        $this->getParams = array_merge($this->getParams, $params);
+        $this->setGetParams(array_merge($this->_getParams, $params));
         return $this;
     }
 
@@ -217,14 +220,14 @@ abstract class AbstractList extends Object implements \Iterator
                 for ($i = 0; $i < $this->countThreads; $i++) {
                     $requests[$i] = new Request([
                         'entity' => $this->getEntity(),
-                        'getParams' => $this->getParams,
+                        'getParams' => $this->_getParams,
                     ]);
                     $this->assignThreadsNumber($requests[$i], $i);
                 }
             } else {
                 $requests[] = new Request([
                     'entity' => $this->getEntity(),
-                    'getParams' => $this->getParams,
+                    'getParams' => $this->_getParams,
                 ]);
             }
             $this->requests = $requests;
@@ -318,8 +321,8 @@ abstract class AbstractList extends Object implements \Iterator
                 $this->processingResponses($responses);
             } catch (\Exception $e) {
                 if (
-                    ($e instanceof \GuzzleHttp\Exception\RequestException) ||
-                    ($e instanceof \SimaLand\API\Rest\ResponseException)
+                    ($e instanceof RequestException) ||
+                    ($e instanceof ResponseException)
                 ) {
                     $logger->warning($e->getMessage(), ['code' => $e->getCode()]);
                 } else {
@@ -383,5 +386,23 @@ abstract class AbstractList extends Object implements \Iterator
             }
         }
         $this->setRequests($requests);
+    }
+
+    /**
+     * Установить GET параметры запроса.
+     *
+     * @param array $value
+     */
+    public function setGetParams(array $value) {
+        $this->_getParams = $value;
+    }
+
+    /**
+     * Получить GET параметры запроса.
+     *
+     * @return array
+     */
+    public function getGetParams() {
+        return $this->_getParams;
     }
 }

@@ -8,13 +8,31 @@ use SimaLand\API\Record;
 
 class ItemListTest extends BaseCase
 {
+    public function testSetGetParams() {
+        $itemList = new ItemList(
+            $this->getClient(),
+            [
+                'logger' => $this->getLogger(),
+                'getParams' => ["test" => "test"],
+            ]
+        );
+        $this->assertEquals(["test" => "test", "id-greater-than" => 0], $itemList->getParams);
+    }
+
     public function testAssignPage()
     {
-        $itemList = new ItemList($this->getClient(), ['logger' => $this->getLogger()]);
+        $itemList = new ItemList(
+            $this->getClient(),
+            [
+                'logger' => $this->getLogger(),
+                'getParams' => ["test" => "test"],
+            ]
+        );
         $request = new \SimaLand\API\Rest\Request();
+        $request->getParams = $itemList->getParams;
 
         $itemList->assignPage($request);
-        $this->assertEmpty($request->getParams);
+        $this->assertEquals(["test" => "test", "id-greater-than" => 0], $request->getParams);
 
         $record = new Record();
         $record->data['id'] = 100;
