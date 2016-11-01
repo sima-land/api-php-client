@@ -4,6 +4,7 @@ namespace SimaLand\API;
 
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 /**
  * Базовый класс.
@@ -26,11 +27,6 @@ class Object
     public function __construct(array $options = [])
     {
         foreach ($options as $key => $value) {
-            $setter = 'set' . ucfirst($key);
-            if (method_exists($this, $setter)) {
-                call_user_func([$this, $setter], $value);
-                continue;
-            }
             $this->{$key} = $value;
         }
     }
@@ -55,9 +51,36 @@ class Object
      * @param \Psr\Log\LoggerInterface $logger
      * @return $this
      */
-    public function setLogger(\Psr\Log\LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
         return $this;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     */
+    public function __set($key, $value)
+    {
+        $setter = 'set' . ucfirst($key);
+        if (method_exists($this, $setter)) {
+            call_user_func([$this, $setter], $value);
+            return;
+        }
+        $this->{$key} = $value;
+    }
+
+    /**
+     * @param string $key
+     * @return mixed
+     */
+    public function __get($key)
+    {
+        $getter = 'get' . ucfirst($key);
+        if (method_exists($this, $getter)) {
+            return call_user_func([$this, $getter]);
+        }
+        return $this->{$key};
     }
 }

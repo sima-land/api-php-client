@@ -31,7 +31,7 @@ class ItemList extends AbstractList
      *
      * @var array
      */
-    public $getParams = [
+    protected $_getParams = [
         'id-greater-than' => 0
     ];
 
@@ -47,9 +47,7 @@ class ItemList extends AbstractList
         if (!is_array($request->getParams)) {
             $request->getParams = (array)$request->getParams;
         }
-        if ($lastId > 0) {
-            $request->getParams[$this->keyAlternativePagination] = $lastId;
-        }
+        $request->getParams[$this->keyAlternativePagination] = $lastId;
     }
 
     /**
@@ -61,5 +59,16 @@ class ItemList extends AbstractList
             $request->getParams = (array)$request->getParams;
         }
         $request->getParams[$this->keyThreads] = "{$this->countThreads},$number";
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setGetParams(array $value)
+    {
+        if (!isset($value[$this->keyAlternativePagination])) {
+            $value[$this->keyAlternativePagination] = 0;
+        }
+        parent::setGetParams($value);
     }
 }
