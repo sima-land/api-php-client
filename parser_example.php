@@ -179,7 +179,6 @@ $parser->addEntity($optionList, $optionStorage);
 $parser->addEntity($dataTypeList, $dataTypeStorage);
 $parser->addEntity($materialList, $materialStorage);
 $parser->addEntity($seriesList, $attrStorage);
-$parser->addEntity($seriesList, $attrStorage);
 $parser->addEntity($countryList, $countryStorage);
 $parser->addEntity($trademarkList, $trademarkStorage);
 $parser->addEntity($itemList, $itemStorage);
