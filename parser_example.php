@@ -82,7 +82,7 @@ $categoryList->addGetParams([
 // Этот метод вернет набор данных сущности.
 $responses = $categoryList->get();
 foreach ($responses as $response) {
-    if ($responses->getStatusCode() == 200) {
+    if ($response->getStatusCode() == 200) {
         $body = json_decode($response->getBody(), true);
         // Метод getCollectionKey() Вернет ключ по которому находятся все записи сущности.
         $collectionKey = $categoryList->getCollectionKey();
