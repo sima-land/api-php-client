@@ -133,7 +133,7 @@ class ParserTest extends BaseCase
     {
         @unlink($this->getMetaFilename());
         $actualFile = TEST_DIR . 'output/country.txt';
-        $body = require(TEST_DIR . "/data/country.php");
+        $body = require(TEST_DIR . "data/country.php");
         $this->setResponse($body);
         $body['_meta']['currentPage'] = 2;
         $this->setResponse($body);
