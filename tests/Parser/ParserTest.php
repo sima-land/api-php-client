@@ -4,6 +4,7 @@ namespace SimaLand\API\Tests\Parser;
 
 use GuzzleHttp\Psr7\Response;
 use SimaLand\API\Entities\CategoryList;
+use SimaLand\API\Entities\CountryList;
 use SimaLand\API\Entities\ItemList;
 use SimaLand\API\Parser\Json;
 use SimaLand\API\Parser\Parser;
@@ -131,24 +132,24 @@ class ParserTest extends BaseCase
     public function testSaveMetaPage()
     {
         @unlink($this->getMetaFilename());
-        $actualFile = TEST_DIR . 'output/category.txt';
-        $body = require(TEST_DIR . "/data/category.php");
+        $actualFile = TEST_DIR . 'output/country.txt';
+        $body = require(TEST_DIR . "data/country.php");
         $this->setResponse($body);
         $body['_meta']['currentPage'] = 2;
         $this->setResponse($body);
         $this->setGuzzleHttpResponse(new Response(404, [], 'Not Found'));
 
         $client = $this->getClient();
-        $categoryList = new CategoryList($client, ['countThreads' => 1, 'logger' => $this->getLogger()]);
-        $categoryStorage = new Json(['filename' => $actualFile]);
+        $countryList = new CountryList($client, ['countThreads' => 1, 'logger' => $this->getLogger()]);
+        $countryStorage = new Json(['filename' => $actualFile]);
 
         $parser = new Parser(['metaFilename' => $this->getMetaFilename(), 'logger' => $this->getLogger()]);
-        $parser->addEntity($categoryList, $categoryStorage);
+        $parser->addEntity($countryList, $countryStorage);
         $parser->run();
 
         $metaData = file_get_contents($this->getMetaFilename());
         $metaData = json_decode($metaData, true);
-        $this->assertEquals(2, $metaData['category']['page']);
+        $this->assertEquals(2, $metaData['country']['page']);
         $parser->reset();
 
         @unlink($actualFile);

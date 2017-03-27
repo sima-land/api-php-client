@@ -54,9 +54,6 @@ $categoryList = new \SimaLand\API\Entities\CategoryList(
 
         // Установим 10 потоков. По умолчанию парсер работает в 5 потоков.
         'countThreads' => 10,
-        // Ключ, который отвечает за номер потока. По дефолту "page".
-        // За исключением сушности "Товар", там ключ будет "id-mf".
-        'keyThreads' => 'page',
         // Можем добавить GET параметры к запросу API.
         // Например, будем получать категории, включая категории 18+.
         'getParams' => [
@@ -112,7 +109,15 @@ $categoryStorage = new \SimaLand\API\Parser\Json([
 ]);
 
 // Атрибуты товаров.
-$attrList = new \SimaLand\API\Entities\AttrList($client, ['logger' => $logger]);
+$attrList = new \SimaLand\API\Entities\AttrList(
+    $client,
+    [
+        'logger' => $logger,
+        // Ключ, который отвечает за номер потока. По дефолту "page".
+        // За исключением сущности "Категории" и "Товар", там ключ будет "id-mf".
+        'keyThreads' => 'page',
+    ]
+);
 $attrStorage = new \SimaLand\API\Parser\Json(['filename' => $pathData . 'attr.txt']);
 
 // Опция атрибута товара.
@@ -129,7 +134,7 @@ $materialStorage = new \SimaLand\API\Parser\Json(['filename' => $pathData . 'mat
 
 // Серии товаров.
 $seriesList = new \SimaLand\API\Entities\SeriesList($client, ['logger' => $logger]);
-$attrStorage = new \SimaLand\API\Parser\Json(['filename' => $pathData . 'series.txt']);
+$seriesStorage = new \SimaLand\API\Parser\Json(['filename' => $pathData . 'series.txt']);
 
 // Страны.
 $countryList = new \SimaLand\API\Entities\CountryList($client, ['logger' => $logger]);
@@ -178,7 +183,7 @@ $parser->addEntity($attrList, $attrStorage);
 $parser->addEntity($optionList, $optionStorage);
 $parser->addEntity($dataTypeList, $dataTypeStorage);
 $parser->addEntity($materialList, $materialStorage);
-$parser->addEntity($seriesList, $attrStorage);
+$parser->addEntity($seriesList, $seriesStorage);
 $parser->addEntity($countryList, $countryStorage);
 $parser->addEntity($trademarkList, $trademarkStorage);
 $parser->addEntity($itemList, $itemStorage);
