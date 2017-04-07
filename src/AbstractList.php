@@ -164,7 +164,7 @@ abstract class AbstractList extends Object implements \Iterator
     }
 
     /**
-     * Назначить следующую страницу запросу, используют альтернативную пагинацию .
+     * Назначить следующую страницу запросу, используют альтернативную пагинацию.
      *
      * @param Request $request
      * @param Record|null $record
