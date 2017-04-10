@@ -39,6 +39,13 @@ abstract class AbstractList extends Object implements \Iterator
     public $keyAlternativePagination = 'id-greater-than';
 
     /**
+     * Использовать альтернативную пагинацию.
+     *
+     * @var bool
+     */
+    public $useAlternativePagination = false;
+
+    /**
      * GET параметры запроса.
      *
      * @var array
@@ -125,12 +132,26 @@ abstract class AbstractList extends Object implements \Iterator
     }
 
     /**
-     * Назначить следующию страницу запросу.
+     * Назначить следующую страницу запросу.
      *
      * @param Request $request
      * @param Record|null $record
      */
     public function assignPage(Request &$request, Record $record = null)
+    {
+        if ($this->useAlternativePagination) {
+            $this->assignAlternativePage($request, $record);
+        } else {
+            $this->assignDefaultPage($request);
+        }
+    }
+
+    /**
+     * Назначить следующую страницу запросу, используя стандартную пагинацию.
+     *
+     * @param Request $request
+     */
+    protected function assignDefaultPage(Request &$request)
     {
         $currentPage = 1;
         if (!is_array($request->getParams)) {
@@ -143,12 +164,45 @@ abstract class AbstractList extends Object implements \Iterator
     }
 
     /**
+     * Назначить следующую страницу запросу, используют альтернативную пагинацию.
+     *
+     * @param Request $request
+     * @param Record|null $record
+     */
+    protected function assignAlternativePage(Request &$request, Record $record = null)
+    {
+        $lastId = 0;
+        if ($record && $record->data) {
+            $lastId = (int)$record->data['id'];
+        }
+        if (!is_array($request->getParams)) {
+            $request->getParams = (array)$request->getParams;
+        }
+        $request->getParams[$this->keyAlternativePagination] = $lastId;
+    }
+
+    /**
      * Назначить номер потока для запроса.
      *
      * @param Request $request
      * @param int $number
      */
     public function assignThreadsNumber(Request &$request, $number = 0)
+    {
+        if ("id-mf" == $this->keyThreads) {
+            $this->assignMfThreadsNumber($request, $number);
+        } else {
+            $this->assignDefaultThreadsNumber($request, $number);
+        }
+    }
+
+    /**
+     * Назначить по умолчанию номер потока для запроса.
+     *
+     * @param Request $request
+     * @param int $number
+     */
+    public function assignDefaultThreadsNumber(Request &$request, $number = 0)
     {
         if (!is_array($request->getParams)) {
             $request->getParams = (array)$request->getParams;
@@ -157,6 +211,20 @@ abstract class AbstractList extends Object implements \Iterator
             $request->getParams[$this->keyThreads] = 1;
         }
         $request->getParams[$this->keyThreads] += $number;
+    }
+
+    /**
+     * Назначить альтернативный номер потока для запроса.
+     *
+     * @param Request $request
+     * @param int $number
+     */
+    public function assignMfThreadsNumber(Request &$request, $number = 0)
+    {
+        if (!is_array($request->getParams)) {
+            $request->getParams = (array)$request->getParams;
+        }
+        $request->getParams[$this->keyThreads] = "{$this->countThreads},$number";
     }
 
     /**
@@ -395,6 +463,9 @@ abstract class AbstractList extends Object implements \Iterator
      */
     public function setGetParams(array $value)
     {
+        if (!isset($value[$this->keyAlternativePagination]) && $this->useAlternativePagination) {
+            $value[$this->keyAlternativePagination] = 0;
+        }
         $this->_getParams = $value;
     }
 

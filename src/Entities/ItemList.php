@@ -3,8 +3,6 @@
 namespace SimaLand\API\Entities;
 
 use SimaLand\API\AbstractList;
-use SimaLand\API\Record;
-use SimaLand\API\Rest\Request;
 
 /**
  * Товары.
@@ -19,56 +17,17 @@ class ItemList extends AbstractList
     public $keyThreads = 'id-mf';
 
     /**
+     * Использовать альтернативную пагинацию.
+     *
+     * @var bool
+     */
+    public $useAlternativePagination = true;
+
+    /**
      * @inheritdoc
      */
     public function getEntity()
     {
         return 'item';
-    }
-
-    /**
-     * GET параметры запроса.
-     *
-     * @var array
-     */
-    protected $_getParams = [
-        'id-greater-than' => 0
-    ];
-
-    /**
-     * @inheritdoc
-     */
-    public function assignPage(Request &$request, Record $record = null)
-    {
-        $lastId = 0;
-        if ($record && $record->data) {
-            $lastId = (int)$record->data['id'];
-        }
-        if (!is_array($request->getParams)) {
-            $request->getParams = (array)$request->getParams;
-        }
-        $request->getParams[$this->keyAlternativePagination] = $lastId;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function assignThreadsNumber(Request &$request, $number = 0)
-    {
-        if (!is_array($request->getParams)) {
-            $request->getParams = (array)$request->getParams;
-        }
-        $request->getParams[$this->keyThreads] = "{$this->countThreads},$number";
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setGetParams(array $value)
-    {
-        if (!isset($value[$this->keyAlternativePagination])) {
-            $value[$this->keyAlternativePagination] = 0;
-        }
-        parent::setGetParams($value);
     }
 }
