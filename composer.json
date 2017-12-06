@@ -4,7 +4,7 @@
     "description": "Client library for Simaland APIs",
     "keywords": ["simaland", "api", "php", "client"],
     "homepage": "https://github.com/sima-land/api-php-client",
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "license": "MIT",
     "authors": [
         {
