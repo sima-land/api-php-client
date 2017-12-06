@@ -59,7 +59,7 @@ class Parser extends Object
      */
     public function __construct(array $options = [])
     {
-        if (!isset($options['metaFilename'])) {
+        if (empty($options['metaFilename'])) {
             throw new \Exception('Param "metaFilename" can`t be empty');
         }
         $this->metaFilename = $options['metaFilename'];
