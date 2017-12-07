@@ -463,8 +463,16 @@ abstract class AbstractList extends Object implements \Iterator
      */
     public function setGetParams(array $value)
     {
-        if (!isset($value[$this->keyAlternativePagination]) && $this->useAlternativePagination) {
-            $value[$this->keyAlternativePagination] = 0;
+        if ($this->useAlternativePagination) {
+            if (!isset($value[$this->keyAlternativePagination])) {
+                $value[$this->keyAlternativePagination] = 0;
+            }
+            $r = new \ReflectionClass(__CLASS__);
+            $defaultProperties = $r->getDefaultProperties();
+            $valueKeyThreads = $defaultProperties['keyThreads'];
+            if (isset($value[$valueKeyThreads])) {
+                unset($value[$valueKeyThreads]);
+            }
         }
         $this->_getParams = $value;
     }
