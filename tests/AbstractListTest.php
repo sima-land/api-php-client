@@ -215,7 +215,8 @@ class AbstractListTest extends BaseCase
         $abstractObject->next();
     }
 
-    public function testSetGetParams() {
+    public function testSetGetParams()
+    {
         $abstractObject = $this->getAbstractObject();
         $keyPage = $abstractObject->keyThreads;
         $newKeyPage = "test";
