@@ -214,4 +214,14 @@ class AbstractListTest extends BaseCase
         $abstractObject->repeatCount = 1;
         $abstractObject->next();
     }
+
+    public function testSetGetParams() {
+        $abstractObject = $this->getAbstractObject();
+        $keyPage = $abstractObject->keyThreads;
+        $newKeyPage = "test";
+        $abstractObject->keyThreads = $newKeyPage;
+        $abstractObject->useAlternativePagination = true;
+        $abstractObject->setGetParams([$keyPage => 20]);
+        $this->assertArrayNotHasKey($keyPage, $abstractObject->getGetParams());
+    }
 }
