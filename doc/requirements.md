@@ -9,9 +9,5 @@
 установке зависимостей. Подробнее о [composer](https://getcomposer.org/download/)
 
 ```sh
-composer require "sima-land/api-php-client": "~3"
+composer require "sima-land/api-php-client:~3"
 ```
-
-
-
-
