@@ -2,13 +2,13 @@
 
 namespace SimaLand\API\Parser;
 
-use SimaLand\API\Object;
+use SimaLand\API\BaseObject;
 use SimaLand\API\Record;
 
 /**
  * Сохранение данных в json файл.
  */
-class Json extends Object implements StorageInterface
+class Json extends BaseObject implements StorageInterface
 {
     /**
      * Пулный путь до файла.

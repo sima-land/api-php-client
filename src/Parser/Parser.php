@@ -3,7 +3,7 @@
 namespace SimaLand\API\Parser;
 
 use SimaLand\API\AbstractList;
-use SimaLand\API\Object;
+use SimaLand\API\BaseObject;
 use SimaLand\API\Record;
 
 /**
@@ -26,7 +26,7 @@ use SimaLand\API\Record;
  *
  * ```
  */
-class Parser extends Object
+class Parser extends BaseObject
 {
     /**
      * Кол-во итераций после которых сохраняются мета данные.

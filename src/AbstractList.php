@@ -15,7 +15,7 @@ use GuzzleHttp\Exception\RequestException;
  *
  * @property $getParams GET параметры запроса.
  */
-abstract class AbstractList extends Object implements \Iterator
+abstract class AbstractList extends BaseObject implements \Iterator
 {
     /**
      * Кол-во потоков.

@@ -5,14 +5,14 @@ namespace SimaLand\API\Rest;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Psr7\Response;
-use SimaLand\API\Object;
+use SimaLand\API\BaseObject;
 
 /**
  * SimaLand клиент.
  *
  * @link https://www.sima-land.ru/api/v3/help/
  */
-class Client extends Object
+class Client extends BaseObject
 {
     /**
      * Базовый url API sima-land.ru.
