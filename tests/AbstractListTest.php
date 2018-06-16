@@ -225,4 +225,21 @@ class AbstractListTest extends BaseCase
         $abstractObject->setGetParams([$keyPage => 20]);
         $this->assertArrayNotHasKey($keyPage, $abstractObject->getGetParams());
     }
+
+    public function testCleanData()
+    {
+        $this->setResponse($this->category);
+        $this->setGuzzleHttpResponse(new Response(404, [], 'Not Found'));
+        $this->setGuzzleHttpResponse(new Response(404, [], 'Not Found'));
+        $abstractObject = $this->getAbstractObject();
+        $abstractObject->countThreads = 1;
+        $abstractObject->fields = ['id', 'name'];
+        foreach ($abstractObject as $key => $value) {
+            $sourceData = [
+                'id' => $this->category['items'][$key]['id'],
+                'name' => $this->category['items'][$key]['name'],
+            ];
+            $this->assertEquals($value->data, $sourceData);
+        }
+    }
 }

@@ -103,6 +103,13 @@ abstract class AbstractList extends BaseObject implements \Iterator
     private $current;
 
     /**
+     * Массив полей, которые пользователь хочет получить из API.
+     *
+     * @var array
+     */
+    public $fields = [];
+
+    /**
      * @param Client $client
      * @param array $options
      */
@@ -444,7 +451,7 @@ abstract class AbstractList extends BaseObject implements \Iterator
             }
             foreach ($body[$collectionKey] as $item) {
                 $record = new Record([
-                    'data' => $item,
+                    'data' => $this->cleanData($item),
                     'meta' => isset($body[$metaKey]) ? $body[$metaKey] : null,
                 ]);
                 $this->values[] = $record;
@@ -485,5 +492,29 @@ abstract class AbstractList extends BaseObject implements \Iterator
     public function getGetParams()
     {
         return $this->_getParams;
+    }
+
+    /**
+     * Получить только те данные из ответа,
+     * которые указаны в свойсте fields объекта сущности,
+     * если аттрибуты не указаны в свойсте fields,
+     * то метод вернет все аттрибуты из ответа
+     *
+     * @param array $item
+     * @return array
+     */
+    private function cleanData($item)
+    {
+        if (!empty($this->fields)) {
+            $cleanItem = [];
+            foreach ($this->fields as $value) {
+                if (in_array($value, array_keys($item))) {
+                    $cleanItem[$value] = $item[$value];
+                }
+            }
+        } else {
+            $cleanItem = $item;
+        }
+        return $cleanItem;
     }
 }
