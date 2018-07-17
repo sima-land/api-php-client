@@ -7,7 +7,7 @@ use Monolog\Logger;
 use SimaLand\API\BaseObject;
 use SimaLand\API\Tests\models\TestModel;
 
-class ObjectTest extends BaseCase
+class BaseObjectTest extends BaseCase
 {
     public function testGetSetLogger()
     {
