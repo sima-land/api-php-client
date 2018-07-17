@@ -2,7 +2,7 @@
 
 namespace SimaLand\API\Tests\models;
 
-use SimaLand\API\Object;
+use SimaLand\API\BaseObject;
 
 /**
  * Class TestModel
@@ -11,7 +11,7 @@ use SimaLand\API\Object;
  * @property $sid int
  * @property $name string
  */
-class TestModel extends Object
+class TestModel extends BaseObject
 {
     protected $sid;
 

@@ -2,12 +2,12 @@
 
 namespace SimaLand\API\Rest;
 
-use SimaLand\API\Object;
+use SimaLand\API\BaseObject;
 
 /**
  * Класс запроса к API simaland.
  */
-class Request extends Object
+class Request extends BaseObject
 {
     /**
      * Наименование сущности.

@@ -4,22 +4,22 @@ namespace SimaLand\API\Tests;
 
 use Monolog\Handler\NullHandler;
 use Monolog\Logger;
-use SimaLand\API\Object;
+use SimaLand\API\BaseObject;
 use SimaLand\API\Tests\models\TestModel;
 
 class ObjectTest extends BaseCase
 {
     public function testGetSetLogger()
     {
-        $object = new Object();
+        $object = new BaseObject();
         $this->assertInstanceOf('\Psr\Log\LoggerInterface', $object->getLogger());
 
-        $logger = new Logger(Object::LOGGER_NAME);
+        $logger = new Logger(BaseObject::LOGGER_NAME);
         $logger->pushHandler(new NullHandler());
-        $object = new Object(['logger' => $logger]);
+        $object = new BaseObject(['logger' => $logger]);
         $this->assertInstanceOf('\Psr\Log\LoggerInterface', $object->getLogger());
 
-        $object = new Object();
+        $object = new BaseObject();
         $object->setLogger($logger);
         $this->assertInstanceOf('\Psr\Log\LoggerInterface', $object->getLogger());
     }

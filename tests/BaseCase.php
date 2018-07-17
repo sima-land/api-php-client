@@ -7,7 +7,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\NullHandler;
 use Monolog\Logger;
-use SimaLand\API\Object;
+use SimaLand\API\BaseObject;
 use SimaLand\API\Rest\Client;
 
 class BaseCase extends \PHPUnit_Framework_TestCase
@@ -23,7 +23,7 @@ class BaseCase extends \PHPUnit_Framework_TestCase
      */
     public function getLogger()
     {
-        $logger = new Logger(Object::LOGGER_NAME);
+        $logger = new Logger(BaseObject::LOGGER_NAME);
         $logger->pushHandler(new NullHandler());
         return $logger;
     }

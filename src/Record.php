@@ -5,7 +5,7 @@ namespace SimaLand\API;
 /**
  * Запись сущности.
  */
-class Record extends Object
+class Record extends BaseObject
 {
     /**
      * Данные одной строки.

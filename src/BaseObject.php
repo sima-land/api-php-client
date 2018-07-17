@@ -9,7 +9,7 @@ use Psr\Log\LoggerInterface;
 /**
  * Базовый класс.
  */
-class Object
+class BaseObject
 {
     /**
      * Наименование лога.
