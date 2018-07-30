@@ -508,7 +508,7 @@ abstract class AbstractList extends BaseObject implements \Iterator
         if (!empty($this->fields)) {
             $cleanItem = [];
             foreach ($this->fields as $value) {
-                if (in_array($value, array_keys($item))) {
+                if (array_key_exists($value, $item)) {
                     $cleanItem[$value] = $item[$value];
                 }
             }
