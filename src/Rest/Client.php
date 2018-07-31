@@ -121,6 +121,7 @@ class Client extends BaseObject
                 "Send request {$url}",
                 [
                     'getParams' => $request->getParams,
+                    'postParams' => $request->postParams
                 ]
             );
             $promises[$name] = $client->requestAsync(
@@ -146,16 +147,18 @@ class Client extends BaseObject
      * @param string $method
      * @param string $entity
      * @param array $getParams
+     * @param array $postParams
      * @return Response
      * @throws \Exception
      */
-    public function query($method, $entity, array $getParams = [])
+    public function query($method, $entity, array $getParams = [], array $postParams = [])
     {
         $response = $this->batchQuery([
             new Request([
                 'entity' => $entity,
                 'method' => $method,
                 'getParams' => $getParams,
+                'postParams' => $postParams
             ])
         ]);
         return reset($response);
@@ -201,6 +204,9 @@ class Client extends BaseObject
         if (!is_null($request)) {
             if (!empty($request->getParams)) {
                 $options[RequestOptions::QUERY] = $request->getParams;
+            }
+            if (!empty($request->postParams)) {
+                $options[RequestOptions::JSON] = $request->postParams;
             }
         }
         $options = array_merge($this->options, $options);

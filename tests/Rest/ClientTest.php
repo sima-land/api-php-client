@@ -39,6 +39,7 @@ class ClientTest extends BaseCase
                     'Authorization' => 'Bearer token',
                 ],
                 'query' => ['foo' => 'bar'],
+                'json' => ['bar' => 'foo']
             ],
             $options
         );
