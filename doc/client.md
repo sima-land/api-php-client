@@ -21,7 +21,7 @@ $client = new \SimaLand\API\Rest\Client([
 $response = $client->get('category', ['page' => 5]);
 $body = json_decode($response->getBody(), true);
 foreach ($body['items'] as $item) {
-    // you code
+    // your code
 }
 ```
 
@@ -44,7 +44,7 @@ foreach ($responses as $response) {
     if ($responses->getStatusCode() == 200) {
         $body = json_decode($response->getBody(), true);
         foreach ($body['items'] as $item) {
-            // you code
+            // your code
         }
     } else {
         throw new \Exception($response->getReasonPhrase(), $responses->getStatusCode());
