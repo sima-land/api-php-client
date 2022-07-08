@@ -14,7 +14,7 @@ class AbstractListTest extends BaseCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->category = require(TEST_DIR . "/data/category.php");
@@ -28,14 +28,11 @@ class AbstractListTest extends BaseCase
     {
         $class = 'SimaLand\API\AbstractList';
         $mock = $this->getMockBuilder($class)
-            ->setConstructorArgs(['client' => $this->getClient(), ['logger' => $this->getLogger()]])
+            ->setConstructorArgs([$this->getClient(), ['logger' => $this->getLogger()]])
             ->getMockForAbstractClass();
         $mock->expects($this->any())
             ->method('getEntity')
             ->will($this->returnValue('entity'));
-        $mock->expects($this->any())
-            ->method('getQueryNextPage')
-            ->will($this->returnValue([]));
         return $mock;
     }
 
@@ -59,11 +56,9 @@ class AbstractListTest extends BaseCase
         $this->assertEquals(2, count($requests));
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testInvalidSetRequest()
     {
+        $this->expectException(\Exception::class);
         $abstractObject = $this->getAbstractObject();
         $abstractObject->setRequests(['test']);
     }
@@ -171,11 +166,9 @@ class AbstractListTest extends BaseCase
         }
     }
 
-    /**
-     * @expectedException \SimaLand\API\Exception
-     */
     public function testExceptionRepeat()
     {
+        $this->expectException(\SimaLand\API\Exception::class);
         $this->setGuzzleHttpResponse(new Response(500, [], 'Internal Server Error'));
         $this->setGuzzleHttpResponse(new Response(500, [], 'Internal Server Error'));
         $abstractObject = $this->getAbstractObject();
@@ -201,11 +194,9 @@ class AbstractListTest extends BaseCase
         $this->assertInstanceOf('\SimaLand\API\Record', $current);
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testListException()
     {
+        $this->expectException(\Exception::class);
         $this->setGuzzleHttpResponse(function () {
             throw new Exception('Test exception');
         });

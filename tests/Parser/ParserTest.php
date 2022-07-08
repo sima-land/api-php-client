@@ -17,12 +17,10 @@ class ParserTest extends BaseCase
         return TEST_DIR . 'output' . DIRECTORY_SEPARATOR . "parser_meta";
     }
 
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage Param "metaFilename" can`t be empty
-     */
     public function testInvalidConstruct()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("Param \"metaFilename\" can`t be empty");
         new Parser();
     }
 
@@ -124,7 +122,7 @@ class ParserTest extends BaseCase
         $this->assertNotEmpty($metaData['item']['id-greater-than']);
 
         $parser->reset();
-        $this->assertFileNotExists($this->getMetaFilename());
+        $this->assertFileDoesNotExist($this->getMetaFilename());
 
         @unlink($actualItem);
     }
@@ -197,7 +195,8 @@ class ParserTest extends BaseCase
         $fh = fopen($filename, "r");
         $data = [];
         while (!feof($fh)) {
-            $line = json_decode(fgetss($fh), true);
+            $rawLine = fgets($fh);
+            $line = json_decode(strip_tags($rawLine), true);
             if ($line) {
                 $key = $line['id'];
                 if (isset($data[$line["id"]])) {

@@ -84,12 +84,10 @@ class ItemListTest extends BaseCase
         $this->assertEquals(30, count($result));
     }
 
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage Internal Server Error
-     */
     public function testException()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("Internal Server Error");
         $this->setGuzzleHttpResponse(new Response(500, [], 'Invalid params'));
         $items = new ItemList($this->getClient(), ['logger' => $this->getLogger()]);
         $items->countThreads = 1;
@@ -97,12 +95,10 @@ class ItemListTest extends BaseCase
         $items->rewind();
     }
 
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage Invalid params
-     */
     public function testMessageException()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("Invalid params");
         $this->setResponse(['message' => 'Invalid params'], 500);
         $items = new ItemList($this->getClient(), ['logger' => $this->getLogger()]);
         $items->countThreads = 1;

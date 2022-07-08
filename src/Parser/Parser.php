@@ -154,9 +154,16 @@ class Parser extends BaseObject
         $entityName = $entity->getEntity();
         $pageKey = $record->meta ? $entity->keyThreads : $entity->keyAlternativePagination;
         if (!isset($this->metaData[$entityName])) {
+
+            $perPage = null;
+
+            if (isset($record->meta['perPage'])) {
+                $perPage = $record->meta['perPage'];
+            }
+
             $this->metaData[$entityName] = [
                 $pageKey => null,
-                'perPage' => $record->meta['perPage'],
+                'perPage' => $perPage,
             ];
             return;
         }
