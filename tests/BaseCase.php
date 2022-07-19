@@ -10,7 +10,7 @@ use Monolog\Logger;
 use SimaLand\API\BaseObject;
 use SimaLand\API\Rest\Client;
 
-class BaseCase extends \PHPUnit_Framework_TestCase
+class BaseCase extends \PHPUnit\Framework\TestCase
 {
     /** @var \SimaLand\API\Rest\Client */
     private $client;

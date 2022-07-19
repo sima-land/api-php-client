@@ -45,27 +45,21 @@ class ClientTest extends BaseCase
         );
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testEmptyLogin()
     {
+        $this->expectException(\Exception::class);
         new Client();
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testEmptyPassword()
     {
+        $this->expectException(\Exception::class);
         new Client(['login' => 'test']);
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testInvalidLoginPassword()
     {
+        $this->expectException(\Exception::class);
         $client = $this->getClient();
         $this->setGuzzleHttpResponse(new Response(401, [], 'Unauthorized'));
         $oldTokenPath = $client->tokenPath;
@@ -74,11 +68,9 @@ class ClientTest extends BaseCase
         $client->tokenPath = $oldTokenPath;
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testInvalidTokenPath()
     {
+        $this->expectException(\Exception::class);
         $client = new Client([
             'login' => 'test',
             'password' => 'password',
@@ -98,7 +90,7 @@ class ClientTest extends BaseCase
             'tokenPath' => TEST_DIR . 'output'
         ]);
         $client->deleteToken();
-        $this->assertFileNotExists($filename);
+        $this->assertFileDoesNotExist($filename);
     }
 
     public function testGetToken()
@@ -133,11 +125,9 @@ class ClientTest extends BaseCase
         $this->assertEquals($body['items'], $responseBody['items']);
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testInvalidBatchQuery()
     {
+        $this->expectException(\Exception::class);
         $client = $this->getClient();
         $client->batchQuery(['test']);
     }
